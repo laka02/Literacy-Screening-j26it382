@@ -33,6 +33,29 @@ signals.
 Four connected FastAPI/React microservices — see `docs/conceptual-diagram.png`.
 
 ## Running locally
-\`\`\`bash
-docker-compose up --build
-\`\`\`
+
+The frontend runs on Vite and the backend runs on FastAPI. MongoDB must be
+running locally or be provided through `MONGODB_URI`.
+
+### Backend
+
+```powershell
+cd backend
+Copy-Item .env.example .env
+.\.venv\Scripts\Activate.ps1
+uvicorn main:app --reload
+```
+
+The API is available at `http://127.0.0.1:8000` and its interactive
+documentation is at `http://127.0.0.1:8000/docs`.
+
+### Frontend
+
+```powershell
+cd frontend
+npm install
+npm run dev
+```
+
+The frontend is available at `http://localhost:5174`. Its Vite configuration
+proxies `/api` requests to the backend.
