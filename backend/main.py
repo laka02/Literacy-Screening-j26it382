@@ -1,13 +1,13 @@
 """
 CAIRE — FastAPI Main Application
-Component: Adaptive Intervention Planning & Progress Tracking
-Team Member: H.K.S.S. Hansamal — IT23166356
+Component: Voice & Reading Fluency Analysis (RFCS)
+Team Member: W.P.D.N. Samarasinghe — IT23362680
 Project: AI-Assisted Adaptive English Learning System for Primary Students in Sri Lanka
 """
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
-from routers import auth
+from routers import auth, fluency
 from database import connect_db, close_db
 
 
@@ -20,9 +20,9 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="CAIRE API",
+    title="CAIRE API — Reading Fluency Assessment",
     description=(
-        "Adaptive Intervention Planning & Progress Tracking — "
+        "Voice & Reading Fluency Analysis (RFCS) — "
         "AI-Assisted English Learning System for Sri Lankan Primary Students (Grade 3-5)"
     ),
     version="1.0.0",
@@ -48,6 +48,7 @@ app.add_middleware(
 
 # ─── Routers ────────────────────────────────────────────────────────────────
 app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])
+app.include_router(fluency.router, prefix="/api/fluency", tags=["Reading Fluency"])
 
 
 # ─── Root & Health ──────────────────────────────────────────────────────────
@@ -56,8 +57,8 @@ async def root():
     return {
         "message": "CAIRE Backend is running!",
         "project": "AI-Assisted Adaptive English Learning System",
-        "component": "Adaptive Intervention Planning & Progress Tracking (CAIRE)",
-        "team_member": "H.K.S.S. Hansamal - IT23166356",
+        "component": "Voice & Reading Fluency Analysis (RFCS)",
+        "team_member": "W.P.D.N. Samarasinghe - IT23362680",
         "version": "1.0.0",
         "docs": "/docs",
     }
