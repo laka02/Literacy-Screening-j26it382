@@ -6,6 +6,7 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 5174,
+    strictPort: true,
     // Proxy API requests to the FastAPI backend
     proxy: {
       '/api': {

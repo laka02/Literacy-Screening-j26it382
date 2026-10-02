@@ -4,6 +4,10 @@ import RoleSelect from './pages/RoleSelect'
 import TeacherAuth from './pages/login/TeacherAuth'
 import ParentAuth from './pages/login/ParentAuth'
 import Home from './pages/Home/Home'
+import ReadQuestHome from './pages/readquest/ReadQuestHome'
+import ReadingStudio from './pages/readquest/ReadingStudio'
+import AssessmentResult from './pages/readquest/AssessmentResult'
+import ProgressDashboard from './pages/readquest/ProgressDashboard'
 
 function PlaceholderDashboard({ role }: { role: string }) {
   const isTeacher = role === 'teacher'
@@ -39,6 +43,13 @@ function App() {
 
         {/* Home Screen */}
         <Route path="/home" element={<Home />} />
+
+        {/* ReadQuest — AI Reading Fluency Assessment & Profiling */}
+        <Route path="/readquest" element={<ReadQuestHome />} />
+        <Route path="/readquest/mission/:id" element={<ReadingStudio />} />
+        <Route path="/readquest/read" element={<ReadingStudio />} />
+        <Route path="/readquest/result" element={<AssessmentResult />} />
+        <Route path="/readquest/progress" element={<ProgressDashboard />} />
 
         {/* Placeholder dashboards (Phase 2) */}
         <Route path="/teacher/dashboard" element={<PlaceholderDashboard role="teacher" />} />

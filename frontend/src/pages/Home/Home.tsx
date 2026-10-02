@@ -85,6 +85,7 @@ export default function Home() {
 
           <nav className="header-nav">
             <a href="#home" className="nav-link active">Home</a>
+            <a href="/readquest" className="nav-link" style={{ color: 'var(--color-primary)', fontWeight: 800 }}>📖 ReadQuest (Fluency)</a>
             <a href="#how-it-works" className="nav-link">How It Works</a>
             <a href="#learning-skills" className="nav-link">Learning Skills</a>
             <a href="#parents-teachers" className="nav-link">For Parents & Teachers</a>

@@ -6,10 +6,51 @@
 /* ─── Reset & Base ─────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+:root {
+  /* User-Specified Theme Palette */
+  --color-primary: #0058be;
+  --color-primary-hover: #004596;
+  --color-secondary: #0284c7;
+  --color-text-title: #0b1c30;
+  --color-text-body: #475569;
+  --color-text-muted: #64748b;
+  --color-bg-page: #f7faff;
+  --color-surface: #ffffff;
+  --color-border: #e2e8f0;
+
+  /* Child-friendly gamified accents & feedback colors */
+  --color-primary-light: #e8f1fc;
+  --color-secondary-light: #e0f2fe;
+  --color-accent-amber: #f59e0b;
+  --color-accent-amber-light: #fef3c7;
+  --color-accent-green: #10b981;
+  --color-accent-green-light: #d1fae5;
+  --color-accent-coral: #f43f5e;
+  --color-accent-coral-light: #ffe4e6;
+  --color-accent-purple: #8b5cf6;
+  --color-accent-purple-light: #f3e8ff;
+
+  /* Elevation & Borders */
+  --radius-xs: 6px;
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-xl: 32px;
+  --radius-full: 9999px;
+
+  --shadow-sm: 0 2px 8px rgba(11, 28, 48, 0.04);
+  --shadow-md: 0 6px 18px rgba(11, 28, 48, 0.06);
+  --shadow-lg: 0 14px 32px rgba(0, 88, 190, 0.08);
+  --shadow-card: 0 12px 28px -4px rgba(11, 28, 48, 0.07);
+  --shadow-glow: 0 0 24px rgba(0, 88, 190, 0.25);
+}
+
 body {
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   overflow-x: hidden;
   min-height: 100vh;
+  background-color: var(--color-bg-page);
+  color: var(--color-text-body);
   -webkit-font-smoothing: antialiased;
 }
 
