@@ -52,10 +52,10 @@ app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])
 @app.get("/")
 async def root():
     return {
-        "message": "🌿 CAIRE Backend is running!",
+        "message": "CAIRE Backend is running!",
         "project": "AI-Assisted Adaptive English Learning System",
         "component": "Adaptive Intervention Planning & Progress Tracking (CAIRE)",
-        "team_member": "H.K.S.S. Hansamal — IT23166356",
+        "team_member": "H.K.S.S. Hansamal - IT23166356",
         "version": "1.0.0",
         "docs": "/docs",
     }

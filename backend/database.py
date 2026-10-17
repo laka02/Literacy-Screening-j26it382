@@ -11,7 +11,7 @@ load_dotenv()
 
 MONGODB_URI = os.getenv("MONGODB_URI")
 # Database name as specified by the team
-DATABASE_NAME = "Personalized English"
+DATABASE_NAME = "PersonalizedEnglish"
 
 client: AsyncIOMotorClient = None
 db = None
@@ -27,8 +27,8 @@ async def connect_db():
     await db["teachers"].create_index("email", unique=True)
     await db["parents"].create_index("parent_email", unique=True)
 
-    print(f"✅ Connected to MongoDB | Database: '{DATABASE_NAME}'")
-    print("📋 Collections ready: teachers, parents")
+    print(f"[OK] Connected to MongoDB | Database: '{DATABASE_NAME}'")
+    print("[OK] Collections ready: teachers, parents")
 
 
 async def close_db():
@@ -36,7 +36,7 @@ async def close_db():
     global client
     if client:
         client.close()
-        print("🔌 Disconnected from MongoDB")
+        print("[--] Disconnected from MongoDB")
 
 
 def get_db():
