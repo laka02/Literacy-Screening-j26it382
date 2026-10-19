@@ -11,10 +11,25 @@ const api = axios.create({
 api.interceptors.response.use(
   (res) => res,
   (err) => {
-    const msg =
-      err.response?.data?.detail ||
-      err.response?.data?.message ||
-      'Something went wrong. Please try again.'
+    let msg = 'Something went wrong. Please try again.'
+    const detail = err.response?.data?.detail
+    if (detail) {
+      if (Array.isArray(detail)) {
+        msg = detail
+          .map((d: any) => d.msg?.replace(/^Value error,\s*/i, '') || JSON.stringify(d))
+          .join('\n')
+      } else if (typeof detail === 'string') {
+        msg = detail
+      } else if (typeof detail === 'object') {
+        msg = detail.msg || JSON.stringify(detail)
+      }
+    } else if (err.response?.data?.message) {
+      msg = err.response.data.message
+    } else if (err.code === 'ECONNREFUSED' || err.message?.includes('Network Error')) {
+      msg = 'Cannot connect to backend server. Please verify backend is running on http://127.0.0.1:8000.'
+    } else if (err.message) {
+      msg = err.message
+    }
     return Promise.reject(new Error(msg))
   },
 )

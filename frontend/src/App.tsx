@@ -1,8 +1,8 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import Welcome from './pages/Welcome'
 import RoleSelect from './pages/RoleSelect'
-import TeacherAuth from './pages/TeacherAuth'
-import ParentAuth from './pages/ParentAuth'
+import TeacherAuth from './pages/login/TeacherAuth'
+import ParentAuth from './pages/login/ParentAuth'
 
 function PlaceholderDashboard({ role }: { role: string }) {
   const isTeacher = role === 'teacher'
