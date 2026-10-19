@@ -126,7 +126,7 @@ export default function ParentAuth() {
       const res = await parentLogin(login.email.trim(), login.password)
       saveAuth(res.token, 'parent', res.user)
       setAlert({ type: 'success', msg: res.message })
-      setTimeout(() => navigate('/parent/dashboard'), 1400)
+      setTimeout(() => navigate('/home'), 1400)
     } catch (err: unknown) {
       setAlert({ type: 'error', msg: err instanceof Error ? err.message : 'Login failed' })
     } finally {
@@ -158,7 +158,7 @@ export default function ParentAuth() {
       })
       saveAuth(res.token, 'parent', res.user)
       setAlert({ type: 'success', msg: res.message })
-      setTimeout(() => navigate('/parent/dashboard'), 1400)
+      setTimeout(() => navigate('/home'), 1400)
     } catch (err: unknown) {
       setAlert({ type: 'error', msg: err instanceof Error ? err.message : 'Registration failed' })
     } finally {

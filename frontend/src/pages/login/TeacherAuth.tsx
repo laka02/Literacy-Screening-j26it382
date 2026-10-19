@@ -114,7 +114,7 @@ export default function TeacherAuth() {
       const res = await teacherLogin(login.email.trim(), login.password)
       saveAuth(res.token, 'teacher', res.user)
       setAlert({ type: 'success', msg: res.message })
-      setTimeout(() => navigate('/teacher/dashboard'), 1400)
+      setTimeout(() => navigate('/home'), 1400)
     } catch (err: unknown) {
       setAlert({ type: 'error', msg: err instanceof Error ? err.message : 'Login failed' })
     } finally {
@@ -144,7 +144,7 @@ export default function TeacherAuth() {
       })
       saveAuth(res.token, 'teacher', res.user)
       setAlert({ type: 'success', msg: res.message })
-      setTimeout(() => navigate('/teacher/dashboard'), 1400)
+      setTimeout(() => navigate('/home'), 1400)
     } catch (err: unknown) {
       setAlert({ type: 'error', msg: err instanceof Error ? err.message : 'Registration failed' })
     } finally {

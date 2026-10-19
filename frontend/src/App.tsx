@@ -3,6 +3,7 @@ import Welcome from './pages/Welcome'
 import RoleSelect from './pages/RoleSelect'
 import TeacherAuth from './pages/login/TeacherAuth'
 import ParentAuth from './pages/login/ParentAuth'
+import Home from './pages/Home/Home'
 
 function PlaceholderDashboard({ role }: { role: string }) {
   const isTeacher = role === 'teacher'
@@ -35,6 +36,9 @@ function App() {
         {/* Auth screens */}
         <Route path="/teacher/auth" element={<TeacherAuth />} />
         <Route path="/parent/auth" element={<ParentAuth />} />
+
+        {/* Home Screen */}
+        <Route path="/home" element={<Home />} />
 
         {/* Placeholder dashboards (Phase 2) */}
         <Route path="/teacher/dashboard" element={<PlaceholderDashboard role="teacher" />} />
