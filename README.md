@@ -27,7 +27,7 @@ signals.
 | Hansamal H.K.S.S. | IT23166356 | Adaptive Intervention Engine (CAIRE) |
 
 **Supervisor:** Ms. Tharushi Rubasinghe
-**Co-Supervisor:** Ms. Sanjivi Chandrosiri
+**Co-Supervisor:** Ms. Sanjivi Chandrasiri
 
 ## Architecture
 Four connected FastAPI/React microservices — see `docs/conceptual-diagram.png`.
