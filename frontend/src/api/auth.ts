@@ -69,8 +69,10 @@ export const getUser = () => {
   const u = localStorage.getItem('caire_user')
   return u ? JSON.parse(u) : null
 }
+export const isAuthenticated = () => Boolean(localStorage.getItem('caire_token'))
 export const clearAuth = () => {
   localStorage.removeItem('caire_token')
   localStorage.removeItem('caire_role')
   localStorage.removeItem('caire_user')
 }
+

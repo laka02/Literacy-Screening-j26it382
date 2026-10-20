@@ -34,11 +34,10 @@ export default function Home() {
     setSelectedAnswer(isCorrect)
     if (isCorrect) {
       setStreakCount((prev) => prev + 1)
-      // Web speech API audio voice if supported
       if ('speechSynthesis' in window) {
         const utterance = new SpeechSynthesisUtterance('Roar! Perfect! Leo the Lion is the King of the Jungle!')
         utterance.rate = 0.95
-        utterance.pitch = 1.1
+        utterance.pitch = 1.15
         window.speechSynthesis.speak(utterance)
       }
     } else {
@@ -87,28 +86,46 @@ export default function Home() {
             <a href="#home" className="nav-link active">Home</a>
             <a href="#how-it-works" className="nav-link">How It Works</a>
             <a href="#learning-skills" className="nav-link">Learning Skills</a>
-            <a href="#parents-teachers" className="nav-link">For Parents & Teachers</a>
+            <a href="#parents-teachers" className="nav-link">For Parents &amp; Teachers</a>
           </nav>
 
           <div className="header-actions">
             {currentUser ? (
-              <div className="user-badge">
-                <span>{userRole === 'teacher' ? '👩‍🏫' : '👨‍👩‍👧'}</span>
-                <span>{currentUser.name || currentUser.parent_name || 'Member'}</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <div
+                  className="user-badge"
+                  style={{ cursor: 'pointer' }}
+                  onClick={() => navigate('/profile')}
+                  title="Click to view your profile & KPI progress"
+                >
+                  <span>{userRole === 'teacher' ? '👩‍🏫' : '👨‍👩‍👧'}</span>
+                  <span>{currentUser.name || currentUser.parent_name || 'Member'}</span>
+                </div>
+                <button
+                  className="btn-header-start"
+                  style={{ padding: '8px 18px', background: '#0058be' }}
+                  onClick={() => navigate('/profile')}
+                  title="View Profile, KPIs and Learning Plan"
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>account_circle</span>
+                  <span>Profile</span>
+                </button>
                 <button
                   onClick={handleLogout}
                   style={{
-                    background: 'none',
-                    border: 'none',
-                    color: '#c62828',
+                    background: '#fee2e2',
+                    border: '1px solid #fecdd3',
+                    color: '#991b1b',
+                    padding: '8px 14px',
+                    borderRadius: '50px',
                     cursor: 'pointer',
                     fontWeight: 800,
                     fontSize: '12px',
-                    marginLeft: '6px',
+                    fontFamily: 'Quicksand',
                   }}
                   title="Logout"
                 >
-                  (Logout)
+                  Logout
                 </button>
               </div>
             ) : (
@@ -122,6 +139,16 @@ export default function Home() {
                     rocket_launch
                   </span>
                 </button>
+                <button
+                  className="btn-header-login"
+                  style={{ padding: '8px 14px' }}
+                  onClick={() => navigate('/profile')}
+                  title="View Sample Profile & KPIs"
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: '18px', verticalAlign: 'middle' }}>
+                    account_circle
+                  </span>
+                </button>
               </>
             )}
           </div>
@@ -129,10 +156,40 @@ export default function Home() {
       </header>
 
       {/* ══════════════════════════════════════════════════════════════════
-         2. HERO SECTION
+         2. HERO SECTION — Cheerful Sunny Sky with Floating Storybook Elements
          ══════════════════════════════════════════════════════════════════ */}
       <section id="home" className="home-hero-section">
-        <div className="hero-glow-blob" />
+        {/* Child-friendly Background elements: Sun, Rays, Clouds & Floating Stickers */}
+        <div className="kids-sun-wrap">
+          <div className="kids-sun-core" />
+          <div className="kids-sun-glow" />
+          {Array.from({ length: 8 }).map((_, i) => (
+            <div
+              key={i}
+              className="kids-sun-ray"
+              style={{ transform: `rotate(${i * 45}deg) translateY(42px)` }}
+            />
+          ))}
+        </div>
+
+        {/* Soft Cartoon Drifting Clouds */}
+        <div className="kids-cloud cloud-top-1" />
+        <div className="kids-cloud cloud-top-2" />
+        <div className="kids-cloud cloud-top-3" />
+
+        {/* Soft Rainbow Arc */}
+        <div className="kids-rainbow-arc" />
+
+        {/* Floating Storybook & Adventure Emojis */}
+        <div className="kids-float-sticker sticker-1" title="Golden Star">⭐</div>
+        <div className="kids-float-sticker sticker-2" title="Balloon">🎈</div>
+        <div className="kids-float-sticker sticker-3" title="Butterfly">🦋</div>
+        <div className="kids-float-sticker sticker-4" title="Magic Pencil">✏️</div>
+        <div className="kids-float-sticker sticker-5" title="Storybook">📖</div>
+        <div className="kids-float-sticker sticker-6" title="Letter A">🅰️</div>
+        <div className="kids-float-sticker sticker-7" title="Letter B">🅱️</div>
+        <div className="kids-float-sticker sticker-8" title="Rocket Adventure">🚀</div>
+        <div className="kids-float-sticker sticker-9" title="Rainbow Sparkle">✨</div>
 
         <div className="hero-content-wrapper">
           {/* Top Pill Badges */}
@@ -167,7 +224,7 @@ export default function Home() {
               </h1>
 
               <p className="hero-description">
-                A joyful reading journey designed for young learners. Powered by CAIRE’s speech AI that
+                A joyful reading journey designed for Grade 3–5 young learners. Powered by CAIRE’s speech AI that
                 listens to real speech, adapts story levels, and gently boosts confidence step-by-step.
               </p>
 
@@ -179,7 +236,7 @@ export default function Home() {
                 </button>
                 <a href="#interactive-teaser" className="btn-3d-secondary">
                   <span className="material-symbols-outlined" style={{ color: '#0058be', fontSize: '24px' }}>
-                    play_circle
+                    sports_esports
                   </span>
                   <span>Try Mini Game</span>
                 </a>
@@ -256,6 +313,16 @@ export default function Home() {
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Organic Storybook Wave Divider */}
+        <div className="storybook-wave-bottom">
+          <svg viewBox="0 0 1440 120" fill="none" preserveAspectRatio="none">
+            <path
+              d="M0,40 C320,110 480,10 720,60 C960,110 1120,20 1440,50 L1440,120 L0,120 Z"
+              fill="#f0f7ff"
+            />
+          </svg>
         </div>
       </section>
 
@@ -371,6 +438,16 @@ export default function Home() {
               <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>arrow_forward</span>
             </button>
           </div>
+        </div>
+
+        {/* Storybook Cloud Wave Divider to Next Section */}
+        <div className="storybook-wave-bottom">
+          <svg viewBox="0 0 1440 100" fill="none" preserveAspectRatio="none">
+            <path
+              d="M0,30 C360,90 720,10 1080,70 C1260,100 1380,40 1440,50 L1440,100 L0,100 Z"
+              fill="#ffffff"
+            />
+          </svg>
         </div>
       </section>
 
@@ -511,6 +588,16 @@ export default function Home() {
             </div>
           </div>
         </div>
+
+        {/* Storybook Wave Divider to Journey */}
+        <div className="storybook-wave-bottom">
+          <svg viewBox="0 0 1440 90" fill="none" preserveAspectRatio="none">
+            <path
+              d="M0,20 C420,80 840,10 1260,60 L1440,40 L1440,90 L0,90 Z"
+              fill="#eef7ff"
+            />
+          </svg>
+        </div>
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════
@@ -597,6 +684,16 @@ export default function Home() {
               <span style={{ fontSize: '12px', fontWeight: 700, color: '#727785' }}>Unlocks at Level 4</span>
             </div>
           </div>
+        </div>
+
+        {/* Wave Divider to Diagnostics */}
+        <div className="storybook-wave-bottom">
+          <svg viewBox="0 0 1440 90" fill="none" preserveAspectRatio="none">
+            <path
+              d="M0,35 C320,10 640,70 1040,20 C1240,-5 1380,45 1440,55 L1440,90 L0,90 Z"
+              fill="#ffffff"
+            />
+          </svg>
         </div>
       </section>
 

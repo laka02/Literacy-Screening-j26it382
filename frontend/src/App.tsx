@@ -4,6 +4,8 @@ import RoleSelect from './pages/RoleSelect'
 import TeacherAuth from './pages/login/TeacherAuth'
 import ParentAuth from './pages/login/ParentAuth'
 import Home from './pages/Home/Home'
+import Profile from './pages/profile/Profile'
+import PersonalPlan from './pages/personal-plan/PersonalPlan'
 
 function PlaceholderDashboard({ role }: { role: string }) {
   const isTeacher = role === 'teacher'
@@ -39,6 +41,12 @@ function App() {
 
         {/* Home Screen */}
         <Route path="/home" element={<Home />} />
+
+        {/* Profile & KPI Progress Screen */}
+        <Route path="/profile" element={<Profile />} />
+
+        {/* Personalized Plan Workspace */}
+        <Route path="/personal-plan" element={<PersonalPlan />} />
 
         {/* Placeholder dashboards (Phase 2) */}
         <Route path="/teacher/dashboard" element={<PlaceholderDashboard role="teacher" />} />
