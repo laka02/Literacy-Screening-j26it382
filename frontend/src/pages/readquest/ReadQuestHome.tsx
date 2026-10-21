@@ -1,199 +1,182 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ReadQuestNavbar } from '../../components/readquest/ReadQuestNavbar'
-import { MascotHoot } from '../../components/readquest/MascotHoot'
+import { ParentViewModal } from '../../components/readquest/ParentViewModal'
 import { READING_PASSAGES } from '../../data/passages'
 import './ReadQuest.css'
 
 export default function ReadQuestHome() {
   const navigate = useNavigate()
-  const [activeMenu, setActiveMenu] = useState('home')
-  const currentMissionPassage = READING_PASSAGES[0] // "Max and the Red Ball"
+  const [showParentModal, setShowParentModal] = useState(false)
 
   return (
-    <div className="rq-app-shell">
+    <div className="rq-app-shell jungle-theme">
       <ReadQuestNavbar stars={450} />
 
-      <main className="rq-main-layout">
-        {/* ── Left Sidebar (Adventure Menu) ── */}
-        <aside className="rq-sidebar">
-          <div className="rq-nav-card">
-            <div className="rq-sidebar-header">Adventure Menu</div>
-            <nav className="rq-sidebar-menu">
-              <button
-                className={`rq-menu-btn ${activeMenu === 'home' ? 'active' : ''}`}
-                onClick={() => setActiveMenu('home')}
-              >
-                <span className="rq-menu-icon">🏠</span>
-                <span>Home</span>
-              </button>
+      <main className="rq-home-layout">
+        {/* ── Left Sidebar (Matching Reference Image 2) ── */}
+        <aside className="rq-glass-sidebar">
+          <div className="sidebar-brand-title">Adventure Reading</div>
 
-              <button
-                className={`rq-menu-btn ${activeMenu === 'reading' ? 'active' : ''}`}
-                onClick={() => navigate('/readquest/mission/' + currentMissionPassage.id)}
-              >
-                <span className="rq-menu-icon">📖</span>
-                <span>My Reading</span>
-              </button>
-
-              <button
-                className={`rq-menu-btn ${activeMenu === 'progress' ? 'active' : ''}`}
-                onClick={() => navigate('/readquest/progress')}
-              >
-                <span className="rq-menu-icon">🌱</span>
-                <span>My Progress</span>
-              </button>
-
-              <button
-                className={`rq-menu-btn ${activeMenu === 'rewards' ? 'active' : ''}`}
-                onClick={() => setActiveMenu('rewards')}
-              >
-                <span className="rq-menu-icon">🏆</span>
-                <span>Rewards</span>
-                <span className="rq-badge-pill">New</span>
-              </button>
-
-              <button
-                className={`rq-menu-btn ${activeMenu === 'profile' ? 'active' : ''}`}
-                onClick={() => navigate('/readquest/progress')}
-              >
-                <span className="rq-menu-icon">👤</span>
-                <span>Profile</span>
-              </button>
-            </nav>
+          {/* User Profile Mini Badge (Matching Reference Image 2) */}
+          <div className="sidebar-user-card">
+            <img src="/lion-mascot.png" alt="Leo Explorer" className="sidebar-avatar-img" />
+            <h3 className="sidebar-user-name">Leo Explorer</h3>
+            <span className="sidebar-user-level">Level 4 Learner 🌟</span>
+            <span className="sidebar-streak-badge">🔥 4 Days Streak</span>
           </div>
 
-          {/* Professor Hoot Mascot Mini Card */}
-          <MascotHoot
-            mini
-            speech="Reading gives you superpowers! Every word makes your voice stronger."
-          />
+          {/* Navigation Menu */}
+          <nav className="sidebar-nav-menu">
+            <button
+              className="sidebar-nav-btn active"
+              onClick={() => navigate('/readquest')}
+            >
+              <span className="nav-icon">🏠</span>
+              <span>Home</span>
+            </button>
+
+            <button
+              className="sidebar-nav-btn"
+              onClick={() => navigate('/readquest/mission/' + READING_PASSAGES[0].id)}
+            >
+              <span className="nav-icon">📖</span>
+              <span>Reading Studio</span>
+            </button>
+
+            <button
+              className="sidebar-nav-btn"
+              onClick={() => navigate('/readquest/progress')}
+            >
+              <span className="nav-icon">🌱</span>
+              <span>Star Garden</span>
+            </button>
+
+            <button
+              className="sidebar-nav-btn parent-btn-highlight"
+              onClick={() => setShowParentModal(true)}
+            >
+              <span className="nav-icon">👨‍👩‍👧</span>
+              <span>Parent View</span>
+            </button>
+
+            <button
+              className="sidebar-nav-btn"
+              onClick={() => navigate('/home')}
+            >
+              <span className="nav-icon">🚪</span>
+              <span>Exit to Portal</span>
+            </button>
+          </nav>
         </aside>
 
-        {/* ── Content Area (Image 2) ── */}
-        <section className="rq-content-area">
-          {/* Top greeting bubble */}
-          <MascotHoot
-            speech="Ready to explore today, Leo? Tommy the Rabbit has hidden magical sight words along the jungle path!"
-            subtext="Listen carefully to word sounds and read at your own natural pace."
-          />
-
-          {/* Main Hero Card: Today's Reading Adventure */}
-          <div className="rq-hero-mission-card">
-            <div className="rq-hero-top-meta">
-              <div className="rq-mission-chapter-tag">
-                <span>🧭</span>
-                <span>CURRENT MISSION • CHAPTER 4</span>
-              </div>
-              <span className="rq-readiness-pill">● GRADE 3-5 READINESS</span>
-            </div>
-
-            <h1 className="rq-hero-headline">Today's Reading Adventure 🌟</h1>
-            <p className="rq-hero-desc">
-              Join Tommy the Rabbit on a magical forest quest! Read simple sentences, discover fun words, and earn golden stars.
-            </p>
-
-            <div className="rq-hero-body-row">
-              {/* Mascot 3D box */}
-              <div className="rq-mascot-card-box">
-                <span className="rq-mascot-emoji-big">🦉</span>
-                <span className="rq-mascot-tag-btn">Let's Read!</span>
-              </div>
-
-              {/* Stats Grid */}
-              <div className="rq-hero-stats-grid">
-                <div className="rq-stat-pill-box">
-                  <span className="rq-stat-pill-num">6</span>
-                  <span className="rq-stat-pill-lbl">Adventures Done</span>
-                </div>
-
-                <div className="rq-stat-pill-box warm">
-                  <span className="rq-stat-pill-num">3 Days 🔥</span>
-                  <span className="rq-stat-pill-lbl">Current Streak</span>
-                </div>
-
-                <div className="rq-stat-pill-box emerald">
-                  <span className="rq-stat-pill-num">70% 📈</span>
-                  <span className="rq-stat-pill-lbl">Reading Progress</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Progress Bar */}
-            <div className="rq-mission-progress-bar-wrap">
-              <div className="rq-mission-track">
-                <div className="rq-mission-fill" style={{ width: '70%' }} />
-              </div>
-            </div>
-
-            {/* Big Action Buttons */}
-            <div className="rq-hero-btn-row">
-              <button
-                className="rq-btn-primary"
-                onClick={() => navigate('/readquest/mission/' + currentMissionPassage.id)}
-              >
-                <span>📖</span>
-                <span>Start Reading →</span>
-              </button>
-
-              <button
-                className="rq-btn-secondary"
-                onClick={() => {
-                  if ('speechSynthesis' in window) {
-                    const u = new SpeechSynthesisUtterance(currentMissionPassage.content)
-                    u.rate = 0.9
-                    window.speechSynthesis.speak(u)
-                  }
-                }}
-              >
-                <span>🎙️</span>
-                <span>Listen & Speak</span>
-              </button>
+        {/* ── Center Content Area ── */}
+        <section className="rq-home-content">
+          {/* Top Activity Banner (Matching Reference Image 2) */}
+          <div className="caire-activity-tag-row">
+            <div className="activity-tag-pill">
+              <span className="tag-icon">🤖</span>
+              <span>CAIRE Learning Activity • Grade 3-5 Oral Reading</span>
             </div>
           </div>
 
-          {/* Bottom Dual Card Grid: Encouragement & Adventure Journey Path */}
-          <div className="rq-dual-card-grid">
-            <div className="rq-encourage-card">
-              <div className="rq-encourage-icon">😊</div>
-              <div className="rq-encourage-body">
-                <h4>Keep Practicing! 🎉</h4>
-                <p>"You are doing great! Let's practice one more story to level up your speaking speed."</p>
-                <span className="rq-encourage-meta">● Recommended by CAIRE AI Tutor</span>
+          {/* Featured Mission Hero Glass Card */}
+          <div className="reading-game-card hero-glass">
+            <div className="hero-content-grid">
+              <div className="hero-left-mascot">
+                <div className="mascot-speech-bubble-blue">
+                  <span>Ready to read with me? 🦁</span>
+                </div>
+                <img
+                  src="/lion-mascot.png"
+                  alt="Leo Explorer Mascot"
+                  className="game-lion-mascot-img big"
+                />
+              </div>
+
+              <div className="hero-right-details">
+                <span className="mission-chapter-badge">TODAY'S ADVENTURE • CHAPTER 1</span>
+                <h1 className="hero-story-title">{READING_PASSAGES[0].title}</h1>
+                <p className="hero-story-teaser">
+                  "{READING_PASSAGES[0].content.slice(0, 110)}..."
+                </p>
+
+                <div className="hero-story-meta-pills">
+                  <span className="meta-pill">📝 {READING_PASSAGES[0].wordCount} Words</span>
+                  <span className="meta-pill">⏱️ ~40 Seconds</span>
+                  <span className="meta-pill">⭐ +50 Golden Stars</span>
+                </div>
+
+                <div className="hero-action-buttons">
+                  <button
+                    className="btn-tactile-blue-large"
+                    onClick={() => navigate('/readquest/mission/' + READING_PASSAGES[0].id)}
+                  >
+                    <span className="mic-icon">🎙️</span>
+                    <span>Start Reading Now →</span>
+                  </button>
+                </div>
               </div>
             </div>
 
-            <div className="rq-journey-card">
-              <div className="rq-journey-header">
-                <h4>💫 Adventure Journey Path</h4>
-                <span className="rq-journey-step-tag">Step 3 of 4 Next</span>
-              </div>
-
-              <div className="rq-journey-track">
-                <div className="rq-journey-node done">
-                  <div className="rq-node-circle">✓</div>
-                  <span className="rq-node-label">Start</span>
+            {/* Help Lion Cross Bridge Tracker (Matching Reference Image 2) */}
+            <div className="bridge-track-section" style={{ marginTop: '20px' }}>
+              <span className="bridge-track-title">HELP LEO CROSS THE BRIDGE! 🦁</span>
+              <div className="bridge-track-nodes">
+                <div className="bridge-node done">
+                  <span className="node-icon">✓</span>
+                  <span className="node-label">Start</span>
                 </div>
-
-                <div className="rq-journey-node done">
-                  <div className="rq-node-circle">✓</div>
-                  <span className="rq-node-label">Read</span>
+                <div className="bridge-line done" />
+                <div className="bridge-node current">
+                  <span className="node-icon">1</span>
+                  <span className="node-label">Story 1</span>
                 </div>
-
-                <div className="rq-journey-node current">
-                  <div className="rq-node-circle">▶</div>
-                  <span className="rq-node-label">Practice</span>
+                <div className="bridge-line" />
+                <div className="bridge-node locked">
+                  <span className="node-icon">🔒</span>
+                  <span className="node-label">Story 2</span>
                 </div>
-
-                <div className="rq-journey-node">
-                  <div className="rq-node-circle">🔒</div>
-                  <span className="rq-node-label">Finish 🏆</span>
+                <div className="bridge-line" />
+                <div className="bridge-node locked">
+                  <span className="node-icon">🔒</span>
+                  <span className="node-label">Trophy 🏆</span>
                 </div>
               </div>
             </div>
+          </div>
+
+          {/* All Stories Grid */}
+          <div className="home-stories-grid">
+            {READING_PASSAGES.map((p, idx) => (
+              <div key={p.id} className="home-story-glass-card">
+                <div className="card-top-icon">
+                  <span className="book-emoji">{idx === 0 ? '🏡' : idx === 1 ? '🛍️' : '🐕'}</span>
+                  <span className="story-idx-tag">STORY {idx + 1}</span>
+                </div>
+                <h3 className="story-name">{p.title}</h3>
+                <p className="story-desc">"{p.content.slice(0, 80)}..."</p>
+                <div className="story-meta-row">
+                  <span>⏱️ ~{p.targetTimeSeconds}s</span>
+                  <span>📝 {p.wordCount} Words</span>
+                </div>
+                <button
+                  className="btn-story-start-tactile"
+                  onClick={() => navigate('/readquest/mission/' + p.id)}
+                >
+                  <span>Read Story 📖</span>
+                </button>
+              </div>
+            ))}
           </div>
         </section>
       </main>
+
+      {/* Parent View Modal */}
+      <ParentViewModal
+        isOpen={showParentModal}
+        onClose={() => setShowParentModal(false)}
+      />
     </div>
   )
 }
