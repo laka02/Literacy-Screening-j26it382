@@ -248,10 +248,10 @@ async def get_progress_and_kpis(authorization: Optional[str] = Header(None), ema
         else:
             student_name = user_doc.get("name", "Young Explorer")
 
-    # 4 Research Components KPIs (Team Research Pillars)
+    # 4 Research Components KPIs (Writing, Reading, Speaking, Listening)
     kpis = [
         ComponentKPI(
-            component_name="Writing & Dysgraphia Screening",
+            component_name="Writing",
             member_title="Research Component 1",
             score_percentage=88,
             risk_level="Low Risk (Healthy)",
@@ -264,34 +264,8 @@ async def get_progress_and_kpis(authorization: Optional[str] = Header(None), ema
             ],
         ),
         ComponentKPI(
-            component_name="Speaking & Pronunciation",
+            component_name="Reading",
             member_title="Research Component 2",
-            score_percentage=76,
-            risk_level="Mild Need (Practicing)",
-            color="#ea580c",
-            icon="record_voice_over",
-            metrics=[
-                MetricItem(label="Phoneme Clarity", value="74%"),
-                MetricItem(label="Vowel Intonation", value="78%"),
-                MetricItem(label="Echo Pacing", value="Good"),
-            ],
-        ),
-        ComponentKPI(
-            component_name="Listening & Comprehension",
-            member_title="Research Component 3",
-            score_percentage=92,
-            risk_level="Mastered (Advanced)",
-            color="#0284c7",
-            icon="hearing",
-            metrics=[
-                MetricItem(label="Sound Distinction", value="94%"),
-                MetricItem(label="Story Retention", value="90%"),
-                MetricItem(label="Clue Accuracy", value="92%"),
-            ],
-        ),
-        ComponentKPI(
-            component_name="Adaptive Learning & Fluency",
-            member_title="CAIRE Adaptive Core (Our Component)",
             score_percentage=84,
             risk_level="On Track (Progressing)",
             color="#7c3aed",
@@ -299,7 +273,33 @@ async def get_progress_and_kpis(authorization: Optional[str] = Header(None), ema
             metrics=[
                 MetricItem(label="Reading Speed", value="84 WPM"),
                 MetricItem(label="Pause Duration", value="1.2s Low"),
-                MetricItem(label="Adaptation Index", value="Optimal"),
+                MetricItem(label="Phonics Accuracy", value="88%"),
+            ],
+        ),
+        ComponentKPI(
+            component_name="Speaking",
+            member_title="Research Component 3",
+            score_percentage=76,
+            risk_level="Mild Need (Practicing)",
+            color="#ea580c",
+            icon="record_voice_over",
+            metrics=[
+                MetricItem(label="Phoneme Clarity", value="74%"),
+                MetricItem(label="Vowel Intonation", value="78%"),
+                MetricItem(label="Pronunciation", value="Good"),
+            ],
+        ),
+        ComponentKPI(
+            component_name="Listening",
+            member_title="Research Component 4",
+            score_percentage=92,
+            risk_level="Mastered (Advanced)",
+            color="#0284c7",
+            icon="hearing",
+            metrics=[
+                MetricItem(label="Sound Distinction", value="94%"),
+                MetricItem(label="Auditory Processing", value="90%"),
+                MetricItem(label="Comprehension", value="92%"),
             ],
         ),
     ]

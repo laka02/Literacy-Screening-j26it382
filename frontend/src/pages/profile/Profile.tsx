@@ -7,8 +7,64 @@ import {
   updateTeacherProfile,
   getProgressKPIs,
   ProgressResponse,
+  ComponentKPI,
 } from '../../api/profile'
 import './profile.css'
+
+const DEFAULT_KPIS: ComponentKPI[] = [
+  {
+    component_name: 'Writing',
+    member_title: 'Research Component 1',
+    score_percentage: 88,
+    risk_level: 'Low Risk (Healthy)',
+    color: '#16a34a',
+    icon: 'draw',
+    metrics: [
+      { label: 'Stroke Accuracy', value: '91%' },
+      { label: 'Letter Alignment', value: '85%' },
+      { label: 'Grip Stamina', value: 'Normal' },
+    ],
+  },
+  {
+    component_name: 'Reading',
+    member_title: 'Research Component 2',
+    score_percentage: 84,
+    risk_level: 'On Track (Progressing)',
+    color: '#7c3aed',
+    icon: 'auto_stories',
+    metrics: [
+      { label: 'Reading Speed', value: '84 WPM' },
+      { label: 'Pause Duration', value: '1.2s Low' },
+      { label: 'Phonics Accuracy', value: '88%' },
+    ],
+  },
+  {
+    component_name: 'Speaking',
+    member_title: 'Research Component 3',
+    score_percentage: 76,
+    risk_level: 'Mild Need (Practicing)',
+    color: '#ea580c',
+    icon: 'record_voice_over',
+    metrics: [
+      { label: 'Phoneme Clarity', value: '74%' },
+      { label: 'Vowel Intonation', value: '78%' },
+      { label: 'Pronunciation', value: 'Good' },
+    ],
+  },
+  {
+    component_name: 'Listening',
+    member_title: 'Research Component 4',
+    score_percentage: 92,
+    risk_level: 'Mastered (Advanced)',
+    color: '#0284c7',
+    icon: 'hearing',
+    metrics: [
+      { label: 'Sound Distinction', value: '94%' },
+      { label: 'Auditory Processing', value: '90%' },
+      { label: 'Comprehension', value: '92%' },
+    ],
+  },
+]
 
 export default function Profile() {
   const navigate = useNavigate()
@@ -367,13 +423,13 @@ export default function Profile() {
                 <span>Literacy Screening Results &amp; Research KPIs</span>
               </h2>
               <p className="section-block-sub">
-                Evaluations generated across the 4 CAIRE speech &amp; early literacy research components
+                Evaluations across Writing, Reading, Speaking &amp; Listening research components
               </p>
             </div>
           </div>
 
           <div className="kpi-cards-grid">
-            {progress?.kpis.map((kpi, idx) => (
+            {(progress?.kpis && progress.kpis.length > 0 ? progress.kpis : DEFAULT_KPIS).map((kpi, idx) => (
               <div key={idx} className="kpi-card">
                 <div>
                   <div className="kpi-card-top">
