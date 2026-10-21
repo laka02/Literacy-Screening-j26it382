@@ -1316,35 +1316,802 @@
   padding: 12px;
   margin-bottom: 20px;
 }
-.reward-chip {
+/* ── Fluency Score Gauge Component ───────────────────────────── */
+.result-gauge-box {
+  width: 100%;
+}
+
+.score-gauge-card {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1.5px solid #e2e8f0;
+  border-radius: 22px;
+  padding: 20px 24px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+}
+
+.gauge-top-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid #f1f5f9;
+  padding-bottom: 12px;
+}
+
+.gauge-title-group {
+  flex: 1;
+}
+
+.gauge-eyebrow {
+  font-size: 0.72rem;
+  font-weight: 900;
+  color: #2563eb;
+  letter-spacing: 0.06em;
+  display: block;
+  margin-bottom: 2px;
+}
+
+.gauge-headline {
+  font-size: 1.25rem;
+  font-weight: 900;
+  color: #0f172a;
+  margin: 0 0 4px 0;
+}
+
+.gauge-subdesc {
+  font-size: 0.84rem;
+  color: #64748b;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.confidence-pill {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  background: #f8fafc;
+  border: 2px solid #10b981;
+  padding: 6px 14px;
+  border-radius: 14px;
+  flex-shrink: 0;
+}
+
+.confidence-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+}
+
+.confidence-val {
+  font-size: 0.92rem;
+  font-weight: 900;
+  color: #0f172a;
+}
+
+.gauge-visual-row {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+
+/* Semi-circular Circular SVG Progress Gauge */
+.circular-gauge-wrapper {
+  position: relative;
+  width: 160px;
+  height: 160px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gauge-svg {
+  transform: rotate(-90deg);
+  width: 100%;
+  height: 100%;
+}
+
+.gauge-bg-circle {
+  stroke: #e2e8f0;
+}
+
+.gauge-progress-circle {
+  transition: stroke-dashoffset 1s ease-in-out;
+}
+
+.gauge-center-content {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.gauge-score-number {
+  font-size: 2.2rem;
+  font-weight: 900;
+  color: #1e3a8a;
+  line-height: 1;
+}
+
+.gauge-score-label {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #64748b;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+.gauge-fraction {
+  font-size: 0.68rem;
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+/* Breakdown Percentage Bars */
+.gauge-breakdown-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.breakdown-bar-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.bar-label-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.bar-name {
+  color: #334155;
+}
+
+.bar-percentage {
+  color: #0f172a;
+  font-weight: 800;
+}
+
+.bar-track {
+  width: 100%;
+  height: 8px;
+  background: #f1f5f9;
+  border-radius: 9999px;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+}
+
+.bar-fill {
+  height: 100%;
+  border-radius: 9999px;
+  transition: width 0.8s ease;
+}
+
+.rfcs-rubric-badge {
+  display: inline-block;
+  font-size: 0.78rem;
+  font-weight: 800;
+  padding: 5px 12px;
+  border-radius: 9999px;
+  margin-top: 4px;
+  width: fit-content;
+}
+
+/* ── Word-Level Reference Alignment View ─────────────────────── */
+.result-words-section {
+  margin: 20px 0;
+}
+
+.word-alignment-container {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1.5px solid #e2e8f0;
+  border-radius: 22px;
+  padding: 22px 24px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+}
+
+.alignment-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.alignment-header-left {
+  flex: 1;
+}
+
+.alignment-header-badge {
+  font-size: 0.72rem;
+  font-weight: 900;
+  color: #2563eb;
+  letter-spacing: 0.06em;
+  display: block;
+  margin-bottom: 2px;
+}
+
+.alignment-title {
+  font-size: 1.25rem;
+  font-weight: 900;
+  color: #0f172a;
+  margin: 0 0 2px 0;
+}
+
+.alignment-subtitle {
+  font-size: 0.84rem;
+  color: #64748b;
+  margin: 0;
+}
+
+.alignment-quick-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #ecfdf5;
+  border: 1.5px solid #a7f3d0;
+  color: #065f46;
+  font-size: 0.84rem;
+  font-weight: 800;
+  padding: 6px 14px;
+  border-radius: 9999px;
+  flex-shrink: 0;
+}
+
+.alignment-word-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  background: #f8fafc;
+  border: 1.5px dashed #cbd5e1;
+  border-radius: 18px;
+  padding: 18px;
+  margin-bottom: 16px;
+}
+
+.aligned-word-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: 1.5px solid transparent;
+  transition: all 0.15s ease;
+  font-family: inherit;
+}
+
+.aligned-word-badge:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+.aligned-word-badge.status-correct {
+  background: #ecfdf5;
+  color: #065f46;
+  border-color: #a7f3d0;
+}
+
+.aligned-word-badge.status-substitution {
+  background: #fffbeb;
+  color: #b45309;
+  border-color: #fde68a;
+}
+
+.aligned-word-badge.status-skipped {
+  background: #fef2f2;
+  color: #b91c1c;
+  border-color: #fecaca;
+  text-decoration: line-through;
+}
+
+.sub-hint {
+  font-size: 0.72rem;
+  font-weight: 800;
+  background: rgba(0, 0, 0, 0.06);
+  padding: 2px 6px;
+  border-radius: 6px;
+}
+
+.alignment-legend-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding-top: 12px;
+  border-top: 1px solid #f1f5f9;
+}
+
+.legend-item {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 0.9rem;
-  color: #78350f;
-}
-.rw-icon { font-size: 1.4rem; }
-
-.result-words-section {
-  margin-bottom: 20px;
+  font-size: 0.82rem;
+  color: #475569;
 }
 
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.legend-dot.correct {
+  background: #10b981;
+}
+
+.legend-dot.substitution {
+  background: #f59e0b;
+}
+
+.legend-dot.skipped {
+  background: #ef4444;
+}
+
+.legend-tip {
+  margin-left: auto;
+  font-size: 0.8rem;
+  color: #2563eb;
+  font-weight: 600;
+}
+
+/* Optional Researcher Toggle */
+.alignment-teacher-toggle-box {
+  margin-top: 14px;
+}
+
+.teacher-expand-btn {
+  background: transparent;
+  border: 1px dashed #cbd5e1;
+  border-radius: 12px;
+  padding: 8px 16px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #64748b;
+  cursor: pointer;
+  width: 100%;
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+.teacher-expand-btn:hover {
+  background: #f8fafc;
+  color: #2563eb;
+  border-color: #93c5fd;
+}
+
+.alignment-tech-drawer {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 14px;
+  margin-top: 10px;
+}
+
+.tech-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.tech-meta-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+}
+
+.tech-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #64748b;
+}
+
+.tech-value {
+  font-size: 0.86rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+/* ── Result Bottom Action Bar ─────────────────────────────────── */
 .result-bottom-action-bar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-top: 14px;
+  padding-top: 18px;
   border-top: 1.5px solid #e2e8f0;
+  margin-top: 14px;
 }
+
 .btn-tactile-secondary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   padding: 14px 28px;
-  border-radius: 16px;
-  border: 1px solid #cbd5e1;
+  border-radius: 18px;
+  border: 2px solid #cbd5e1;
+  border-bottom: 4px solid #94a3b8;
   background: #ffffff;
   font-weight: 800;
   font-size: 1rem;
   color: #334155;
   cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: all 0.15s ease;
+}
+
+.btn-tactile-secondary:hover {
+  transform: translateY(-2px);
+  border-bottom-width: 5px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+}
+
+.btn-tactile-secondary:active {
+  transform: translateY(2px);
+  border-bottom-width: 2px;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   STAR GARDEN & PROGRESS DASHBOARD
+   ══════════════════════════════════════════════════════════════════ */
+.tab-pill-toggle {
+  display: flex;
+  gap: 8px;
+}
+
+.tab-toggle-btn {
+  padding: 8px 16px;
+  border-radius: 9999px;
+  border: 1.5px solid #cbd5e1;
+  background: #ffffff;
+  font-size: 0.84rem;
+  font-weight: 800;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tab-toggle-btn.active {
+  background: #2563eb;
+  color: #ffffff;
+  border-color: #1d4ed8;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+.garden-stats-banner {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin: 18px 0;
+}
+
+.garden-stat-box {
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 18px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
+.garden-stat-box.warm { border-left: 4px solid #f59e0b; }
+.garden-stat-box.emerald { border-left: 4px solid #10b981; }
+.garden-stat-box.purple { border-left: 4px solid #8b5cf6; }
+
+.stat-emoji {
+  font-size: 1.8rem;
+}
+
+.stat-meta {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-big-val {
+  font-size: 1.25rem;
+  font-weight: 900;
+  color: #0f172a;
+}
+
+.stat-sub-label {
+  font-size: 0.72rem;
+  color: #64748b;
+  font-weight: 700;
+}
+
+.garden-section {
+  margin-top: 24px;
+}
+
+.garden-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.section-tag {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #2563eb;
+  background: #eff6ff;
+  padding: 4px 12px;
+  border-radius: 9999px;
+}
+
+.weekly-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+
+.session-card {
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 18px;
+  padding: 16px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.2s ease;
+}
+
+.session-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+}
+
+.session-date {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #64748b;
+}
+
+.session-title {
+  font-size: 0.95rem;
+  font-weight: 900;
+  color: #0f172a;
+  margin: 4px 0 8px 0;
+}
+
+.session-score-circle {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: #eff6ff;
+  border: 2px solid #bfdbfe;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 10px auto;
+}
+
+.session-score-circle .score-num {
+  font-size: 1.15rem;
+  font-weight: 900;
+  color: #1d4ed8;
+  line-height: 1;
+}
+
+.session-score-circle .score-lbl {
+  font-size: 0.6rem;
+  color: #64748b;
+  text-transform: uppercase;
+  font-weight: 800;
+}
+
+.session-metrics-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: #475569;
+  margin-bottom: 6px;
+}
+
+.session-stars-row {
+  font-size: 0.85rem;
+}
+
+.badges-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.badge-card {
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 18px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+.badge-card.locked {
+  opacity: 0.6;
+  background: #f8fafc;
+}
+
+.badge-icon-box {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: #eff6ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  margin-bottom: 8px;
+}
+
+.badge-title {
+  font-size: 0.95rem;
+  font-weight: 900;
+  color: #0f172a;
+  margin: 0 0 4px 0;
+}
+
+.badge-desc {
+  font-size: 0.78rem;
+  color: #64748b;
+  line-height: 1.35;
+  margin: 0 0 10px 0;
+  flex: 1;
+}
+
+.badge-status-pill {
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 3px 10px;
+  border-radius: 9999px;
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.badge-card.locked .badge-status-pill {
+  background: #e2e8f0;
+  color: #64748b;
+}
+
+/* Teacher Rubric Styles */
+.teacher-rubric-wrap {
+  margin-top: 20px;
+  background: #fafcff;
+  border: 1.5px solid #d0e7ff;
+  border-radius: 20px;
+  padding: 20px;
+}
+
+.rubric-header-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.rubric-title {
+  font-size: 1.2rem;
+  font-weight: 900;
+  color: #1e3a8a;
+  margin: 0 0 2px 0;
+}
+
+.rubric-subtitle {
+  font-size: 0.82rem;
+  color: #64748b;
+  margin: 0;
+}
+
+.rubric-badge-total {
+  background: #d1fae5;
+  color: #065f46;
+  font-size: 0.82rem;
+  font-weight: 800;
+  padding: 6px 14px;
+  border-radius: 9999px;
+}
+
+.rubric-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rubric-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 10px 16px;
+}
+
+.rubric-col-name {
+  width: 180px;
+  font-size: 0.9rem;
+  color: #0f172a;
+}
+
+.rubric-col-notes {
+  flex: 1;
+  padding: 0 16px;
+  font-size: 0.8rem;
+  color: #64748b;
+}
+
+.rubric-col-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.rubric-track {
+  width: 100px;
+  height: 8px;
+  background: #e2e8f0;
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.rubric-fill {
+  height: 100%;
+  background: #2563eb;
+  border-radius: 9999px;
+}
+
+.rubric-score-num {
+  font-size: 0.85rem;
+  color: #2563eb;
+  width: 44px;
+  text-align: right;
+}
+
+.rubric-summary-box {
+  margin-top: 16px;
+  background: #eff6ff;
+  border-radius: 12px;
+  padding: 12px 16px;
+}
+
+.summary-title {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #1e40af;
+  margin: 0 0 4px 0;
+}
+
+.summary-text {
+  font-size: 0.82rem;
+  color: #1e3a8a;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.garden-bottom-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 24px;
 }
 
 /* Animations */
