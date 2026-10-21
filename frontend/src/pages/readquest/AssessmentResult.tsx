@@ -5,7 +5,6 @@ import { FluencyScoreGauge } from '../../components/readquest/FluencyScoreGauge'
 import { WordAlignmentView } from '../../components/readquest/WordAlignmentView'
 import { ParentViewModal } from '../../components/readquest/ParentViewModal'
 import { FluencyProfileReport } from '../../types/fluency'
-import { READING_PASSAGES } from '../../data/passages'
 import './ReadQuest.css'
 
 export default function AssessmentResult() {
@@ -25,39 +24,40 @@ export default function AssessmentResult() {
     }
   }, [])
 
-  const defaultPassage = READING_PASSAGES[0]
-  const metrics = report?.metrics || {
-    rfcs: 88,
-    fluencyLevel: 'High' as const,
-    confidenceBadge: 'Super Reader ⚡',
-    wpm: 96,
-    wpmScore: 4.8,
-    wpmPercent: 88,
-    accuracyPercent: 94,
-    accuracyScore: 4.7,
-    wordErrorRate: 0.06,
-    smoothnessScore: 4.4,
-    smoothnessPercent: 84,
-    pauseCount: 3,
-    avgPauseDuration: 0.8,
-    totalDuration: 22,
-    featureVector: {
-      wpm: 96,
-      readingAccuracyPercent: 94,
-      wordErrorRate: 0.06,
-      skipRatePercent: 0,
-      pauseCount: 3,
-      avgPauseDurationSec: 0.8,
-      totalReadingDurationSec: 22
-    }
+  // If no real report exists, show an error — never display fake scores
+  if (!report) {
+    return (
+      <div className="rq-app-shell jungle-theme">
+        <ReadQuestNavbar
+          showSteps
+          currentStep="result"
+          stars={0}
+          missionTitle="Assessment"
+          progressPercent={0}
+        />
+        <main className="rq-game-container">
+          <div className="reading-game-card" style={{ textAlign: 'center', padding: '48px 24px' }}>
+            <p style={{ fontSize: '3rem' }}>⚠️</p>
+            <h2 style={{ color: '#e57373', marginBottom: 12 }}>No Assessment Data Found</h2>
+            <p style={{ color: '#bbb', marginBottom: 24 }}>
+              It looks like no completed reading assessment was found. Please go back, record
+              your reading, and submit it to see your score.
+            </p>
+            <button
+              className="btn-tactile-blue-large"
+              onClick={() => navigate('/readquest')}
+            >
+              ← Back to Story Selection
+            </button>
+          </div>
+        </main>
+      </div>
+    )
   }
 
-  const wordAlignment = report?.wordAlignment || defaultPassage.content.split(' ').map((word, i) => ({
-    id: `w-${i}`,
-    word,
-    status: (i === 4 ? 'substitution' : 'correct') as any,
-    recognizedAs: i === 4 ? 'garden' : undefined
-  }))
+  // report is guaranteed non-null here (early return above handles null)
+  const metrics      = report.metrics
+  const wordAlignment = report.wordAlignment
 
   const playCelebrationVoice = () => {
     if ('speechSynthesis' in window) {
@@ -74,7 +74,7 @@ export default function AssessmentResult() {
         showSteps
         currentStep="result"
         stars={500}
-        missionTitle={report?.passageTitle || 'My Family & Garden'}
+        missionTitle={report.passageTitle}
         progressPercent={100}
       />
 
@@ -185,7 +185,7 @@ export default function AssessmentResult() {
           <div className="result-bottom-action-bar">
             <button
               className="btn-tactile-secondary"
-              onClick={() => navigate('/readquest/mission/' + (report?.passageId || defaultPassage.id))}
+              onClick={() => navigate('/readquest/mission/' + report.passageId)}
             >
               <span>🔄 Read Again</span>
             </button>
@@ -205,7 +205,7 @@ export default function AssessmentResult() {
         isOpen={showParentModal}
         onClose={() => setShowParentModal(false)}
         metrics={metrics}
-        passageTitle={report?.passageTitle || 'My Family & Garden'}
+        passageTitle={report.passageTitle}
       />
     </div>
   )

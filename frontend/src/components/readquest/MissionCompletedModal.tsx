@@ -7,6 +7,8 @@ interface MissionCompletedModalProps {
   onViewScore: () => void
   onTryAgain: () => void
   isSubmitting?: boolean
+  /** Processing step message shown while Whisper/ML runs on the server */
+  processingStep?: string
 }
 
 export const MissionCompletedModal: React.FC<MissionCompletedModalProps> = ({
@@ -15,7 +17,8 @@ export const MissionCompletedModal: React.FC<MissionCompletedModalProps> = ({
   wordCount,
   onViewScore,
   onTryAgain,
-  isSubmitting = false
+  isSubmitting = false,
+  processingStep,
 }) => {
   if (!isOpen) return null
 
@@ -50,6 +53,17 @@ export const MissionCompletedModal: React.FC<MissionCompletedModalProps> = ({
           </div>
         </div>
 
+        {/* Processing status (shown while Whisper is running) */}
+        {isSubmitting && processingStep && (
+          <div className="completed-processing-status" aria-live="polite">
+            <span className="processing-spinner" aria-hidden="true">⏳</span>
+            <span className="processing-text">{processingStep}</span>
+            <p className="processing-note">
+              CAIRE is using AI to listen carefully. This may take up to 60 seconds on the first run.
+            </p>
+          </div>
+        )}
+
         {/* Big Action Buttons */}
         <div className="completed-action-row">
           <button
@@ -65,7 +79,11 @@ export const MissionCompletedModal: React.FC<MissionCompletedModalProps> = ({
             onClick={onViewScore}
             disabled={isSubmitting}
           >
-            <span>{isSubmitting ? 'Checking Voice Magic... ⏳' : 'Check My Reading Score 🚀 →'}</span>
+            <span>
+              {isSubmitting
+                ? (processingStep ?? 'Checking Voice Magic… ⏳')
+                : 'Check My Reading Score 🚀 →'}
+            </span>
           </button>
         </div>
       </div>

@@ -7,6 +7,15 @@ import { READING_PASSAGES } from '../../data/passages'
 import { assessReadingFluency } from '../../services/fluencyService'
 import './ReadQuest.css'
 
+// Processing status messages shown while Whisper is running
+const PROCESSING_STEPS = [
+  '🎙️ Uploading your recording…',
+  '🤖 CAIRE is listening to your voice…',
+  '📝 Transcribing words with Whisper AI…',
+  '📊 Calculating your fluency score…',
+  '✨ Almost ready…',
+]
+
 export default function ReadingStudio() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
@@ -22,6 +31,8 @@ export default function ReadingStudio() {
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null)
   const [audioUrl, setAudioUrl] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitStep, setSubmitStep] = useState(0)
+  const [assessError, setAssessError] = useState<string | null>(null)
   const [isNarrating, setIsNarrating] = useState(false)
   const [showCompletedModal, setShowCompletedModal] = useState(false)
 
@@ -101,39 +112,40 @@ export default function ReadingStudio() {
 
   // 3. Start Recording
   const startRecording = async () => {
+    setAssessError(null)
+    if ('speechSynthesis' in window) window.speechSynthesis.cancel()
+    setIsNarrating(false)
+
+    let stream: MediaStream
     try {
-      if ('speechSynthesis' in window) window.speechSynthesis.cancel()
-      setIsNarrating(false)
-
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
-      setAudioStream(stream)
-
-      const mediaRecorder = new MediaRecorder(stream)
-      mediaRecorderRef.current = mediaRecorder
-      audioChunksRef.current = []
-
-      mediaRecorder.ondataavailable = (event) => {
-        if (event.data.size > 0) audioChunksRef.current.push(event.data)
-      }
-
-      mediaRecorder.onstop = () => {
-        const blob = new Blob(audioChunksRef.current, { type: 'audio/wav' })
-        setAudioBlob(blob)
-        setAudioUrl(URL.createObjectURL(blob))
-        // Show Completed Popup Modal!
-        setShowCompletedModal(true)
-      }
-
-      mediaRecorder.start()
-      setIsRecording(true)
-      setIsPaused(false)
-      setRecordingSeconds(0)
+      stream = await navigator.mediaDevices.getUserMedia({ audio: true })
     } catch (err) {
-      console.warn('Microphone permission not granted, simulation mode:', err)
-      setIsRecording(true)
-      setIsPaused(false)
-      setRecordingSeconds(0)
+      setAssessError(
+        'Microphone access was denied. Please allow microphone permission in your browser and try again.'
+      )
+      return
     }
+
+    setAudioStream(stream)
+    const mediaRecorder = new MediaRecorder(stream)
+    mediaRecorderRef.current = mediaRecorder
+    audioChunksRef.current = []
+
+    mediaRecorder.ondataavailable = (event) => {
+      if (event.data.size > 0) audioChunksRef.current.push(event.data)
+    }
+
+    mediaRecorder.onstop = () => {
+      const blob = new Blob(audioChunksRef.current, { type: 'audio/webm;codecs=opus' })
+      setAudioBlob(blob)
+      setAudioUrl(URL.createObjectURL(blob))
+      setShowCompletedModal(true)
+    }
+
+    mediaRecorder.start(250) // collect data every 250 ms
+    setIsRecording(true)
+    setIsPaused(false)
+    setRecordingSeconds(0)
   }
 
   // 4. Pause / Resume Recording
@@ -156,12 +168,6 @@ export default function ReadingStudio() {
     if (mediaRecorderRef.current && isRecording) {
       mediaRecorderRef.current.stop()
       if (audioStream) audioStream.getTracks().forEach((t) => t.stop())
-    } else {
-      // Simulation mode
-      const dummyBlob = new Blob(['sample-audio-data'], { type: 'audio/wav' })
-      setAudioBlob(dummyBlob)
-      setAudioUrl('simulated-audio')
-      setShowCompletedModal(true)
     }
     setIsRecording(false)
     setIsPaused(false)
@@ -179,17 +185,30 @@ export default function ReadingStudio() {
 
   // 7. View Score -> Submit to AI Assessment
   const handleViewScore = async () => {
+    setAssessError(null)
     setIsSubmitting(true)
-    const effectiveDuration = Math.max(recordingSeconds, 20)
-    const report = await assessReadingFluency(audioBlob, passage, effectiveDuration)
+    setSubmitStep(0)
 
-    sessionStorage.setItem('current_fluency_report', JSON.stringify(report))
+    // Advance the processing step display every ~20 s so the student
+    // sees progress feedback while Whisper is running on the server.
+    const stepInterval = setInterval(() => {
+      setSubmitStep((prev) => Math.min(prev + 1, PROCESSING_STEPS.length - 1))
+    }, 20_000)
 
-    setTimeout(() => {
-      setIsSubmitting(false)
+    try {
+      const effectiveDuration = Math.max(recordingSeconds, 5)
+      const report = await assessReadingFluency(audioBlob, passage, effectiveDuration)
+      sessionStorage.setItem('current_fluency_report', JSON.stringify(report))
       setShowCompletedModal(false)
       navigate('/readquest/result')
-    }, 1000)
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Assessment failed. Please try again.'
+      setAssessError(msg)
+    } finally {
+      clearInterval(stepInterval)
+      setIsSubmitting(false)
+      setSubmitStep(0)
+    }
   }
 
   return (
@@ -364,14 +383,24 @@ export default function ReadingStudio() {
         </div>
       </main>
 
-      {/* Completed Popup Modal (Required by user!) */}
+      {/* Assessment error banner (shown above modal when something goes wrong) */}
+      {assessError && (
+        <div className="assess-error-banner" role="alert">
+          <span className="error-icon">⚠️</span>
+          <span className="error-msg">{assessError}</span>
+          <button className="error-dismiss" onClick={() => setAssessError(null)}>✕</button>
+        </div>
+      )}
+
+      {/* Completed Popup Modal */}
       <MissionCompletedModal
         isOpen={showCompletedModal}
-        durationSeconds={recordingSeconds || 22}
+        durationSeconds={recordingSeconds || 5}
         wordCount={passage.wordCount}
         onViewScore={handleViewScore}
         onTryAgain={handleTryAgain}
         isSubmitting={isSubmitting}
+        processingStep={isSubmitting ? PROCESSING_STEPS[submitStep] : undefined}
       />
     </div>
   )
