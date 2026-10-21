@@ -358,97 +358,236 @@ export default function PersonalPlan() {
               </button>
             </div>
 
-            {/* Interactive 3-Stage Adventure Map */}
-            <div className="adventure-map-container">
-              <div className="map-island-bg" />
+            {/* ── 1. CAIRE AI Recommendation Card (Storybook Adventure) ── */}
+            <section className="journey-ai-card">
+              <div className="journey-ai-glow-1" />
+              <div className="journey-ai-glow-2" />
+              
+              <div className="journey-ai-peek">
+                <span>🤖</span>
+              </div>
 
-              {/* Landscape markers */}
-              <span className="map-landmark-icon landmark-tree-1">🌴</span>
-              <span className="map-landmark-icon landmark-river">🌊</span>
-              <span className="map-landmark-icon landmark-castle">🏰</span>
-              <span className="map-landmark-icon landmark-mountain">⛰️</span>
+              <div className="journey-ai-header">
+                <div className="journey-ai-icon-box">
+                  <span className="material-symbols-outlined" style={{ fontSize: '22px' }}>smart_toy</span>
+                </div>
+                <h3 className="journey-ai-title">Today&apos;s Learning Adventure 🗺️</h3>
+              </div>
 
-              <div className="map-stages-connector-line" />
+              <p className="journey-ai-quote">
+                CAIRE recommends: Based on your <strong>{selectedSkill.current_score}% Literacy Screening</strong>, 
+                let&apos;s conquer <strong>{selectedSkill.name}</strong> with <strong>{selectedSkill.animal_guide}</strong>! 🌟
+              </p>
 
-              <div className="map-stages-path">
+              <div className="journey-quick-chips">
+                <button 
+                  className="journey-chip-btn" 
+                  style={{ background: '#fef3c7', color: '#92400e', border: '1.5px solid #fde68a' }}
+                  onClick={() => handleSpeakText(`Let's explore ${selectedSkill.name} with ${selectedSkill.animal_guide}!`)}
+                >
+                  <span>🟠</span>
+                  <span>{selectedSkill.name} Quest</span>
+                </button>
+                <button 
+                  className="journey-chip-btn" 
+                  style={{ background: '#dbeafe', color: '#1e40af', border: '1.5px solid #bfdbfe' }}
+                  onClick={() => {
+                    const firstUnlocked = activePlan.stages.find(s => s.stage_number === 1 || stagesProgress[s.stage_number - 1])
+                    if (firstUnlocked) handleOpenGame(firstUnlocked)
+                  }}
+                >
+                  <span>🔵</span>
+                  <span>Interactive Challenge</span>
+                </button>
+                <button 
+                  className="journey-chip-btn" 
+                  style={{ background: '#f3e8ff', color: '#6b21a8', border: '1.5px solid #e9d5ff' }}
+                  onClick={() => handleSpeakText(`${selectedSkill.animal_guide} is ready to guide you through three exciting adventure stages!`)}
+                >
+                  <span>🟣</span>
+                  <span>Mascot Voice Tip</span>
+                </button>
+              </div>
+            </section>
+
+            {/* ── 2. Top 3 KPI Summary Cards ── */}
+            <section className="journey-kpis-grid">
+              <div className="journey-kpi-pill-card" style={{ borderColor: '#bfdbfe' }}>
+                <div className="journey-kpi-pill-icon" style={{ background: '#dbeafe', color: '#0058be' }}>
+                  <span className="material-symbols-outlined">graphic_eq</span>
+                </div>
+                <div>
+                  <div className="journey-kpi-pill-label" style={{ color: '#0058be' }}>Screening Score</div>
+                  <div className="journey-kpi-pill-val">{selectedSkill.current_score}%</div>
+                </div>
+              </div>
+
+              <div className="journey-kpi-pill-card" style={{ borderColor: '#fde68a' }}>
+                <div className="journey-kpi-pill-icon" style={{ background: '#fef3c7', color: '#b45309' }}>
+                  <span className="material-symbols-outlined">edit_square</span>
+                </div>
+                <div>
+                  <div className="journey-kpi-pill-label" style={{ color: '#b45309' }}>Performance Level</div>
+                  <div className="journey-kpi-pill-val" style={{ textTransform: 'capitalize' }}>
+                    {activePlan.evaluation.performance_band}
+                  </div>
+                </div>
+              </div>
+
+              <div className="journey-kpi-pill-card" style={{ borderColor: '#e9d5ff' }}>
+                <div className="journey-kpi-pill-icon" style={{ background: '#f3e8ff', color: '#7e22ce' }}>
+                  <span className="material-symbols-outlined">psychology</span>
+                </div>
+                <div>
+                  <div className="journey-kpi-pill-label" style={{ color: '#7e22ce' }}>Quest Progress</div>
+                  <div className="journey-kpi-pill-val">
+                    {Object.values(stagesProgress).filter(Boolean).length}/3 Cleared
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {/* ── 3. Interactive Winding Journey Board ── */}
+            <section className="adventure-journey-board">
+              {/* Landscape decor elements */}
+              <div className="journey-decor-landmarks">
+                <span className="landmark-tree">🌴</span>
+                <span className="landmark-river-water">🌊</span>
+                <span className="landmark-castle-tower">🏰</span>
+                <span className="landmark-mountain-peak">⛰️</span>
+              </div>
+
+              <div className="journey-board-header">
+                <h3 className="journey-board-title">My Journey Path 🗺️</h3>
+                <p className="journey-board-sub">
+                  Tap each checkpoint to play and earn stars along the winding adventure trail!
+                </p>
+              </div>
+
+              {/* Connecting Path SVG Curve (Background) */}
+              <div className="journey-svg-track">
+                <svg preserveAspectRatio="xMidYMin meet" viewBox="0 0 400 800">
+                  <path
+                    className="path-line"
+                    d="M 170 40 Q 60 120 120 180 T 280 340 Q 350 430 130 520 T 200 690"
+                    fill="none"
+                    stroke="#10b981"
+                    strokeWidth="8"
+                    strokeLinecap="round"
+                  />
+                </svg>
+              </div>
+
+              {/* Journey Nodes Chain (Staggered Layout) */}
+              <div className="journey-nodes-chain">
+                {/* Node 0: Start Point (Completed) */}
+                <div className="journey-node-row shift-left">
+                  <div className="journey-bubble" style={{ borderColor: '#16a34a', background: '#dcfce7' }}>
+                    <span>🌱</span>
+                    <div className="journey-check-badge">
+                      <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>check</span>
+                    </div>
+                  </div>
+                  <div className="journey-node-pill">
+                    <span className="journey-node-title">Adventure Start</span>
+                    <span className="journey-node-sub">Passport Ready ✨</span>
+                  </div>
+                </div>
+
+                {/* Nodes 1 to 3: The 3 Stages */}
                 {activePlan.stages.map((stage, idx) => {
                   const isCompleted = stagesProgress[stage.stage_number]
-                  // Stage 1 unlocked by default; Stage 2 unlocked if stage 1 done; Stage 3 unlocked if stage 2 done
                   const isUnlocked =
                     stage.stage_number === 1 || stagesProgress[stage.stage_number - 1]
+                  const isCurrent = isUnlocked && !isCompleted
 
-                  const diffClass =
-                    idx === 0 ? 'stage-diff-easy' : idx === 1 ? 'stage-diff-med' : 'stage-diff-hard'
+                  // Alternating zig-zag offset (Stage 1 left, Stage 2 right, Stage 3 left)
+                  const shiftClass = idx === 0 ? 'shift-left' : idx === 1 ? 'shift-right' : 'shift-left'
+                  const nodeEmoji = idx === 0 ? '🦁' : idx === 1 ? '🛶' : '⭐'
 
                   return (
                     <div
                       key={stage.stage_number}
-                      className={`stage-node-card ${isCompleted ? 'completed' : ''} ${
-                        isUnlocked && !isCompleted ? 'active' : ''
-                      } ${!isUnlocked ? 'locked' : ''}`}
+                      className={`journey-node-row ${shiftClass} ${isCompleted ? 'completed' : ''} ${isCurrent ? 'current' : ''} ${!isUnlocked ? 'locked' : ''}`}
+                      onClick={() => {
+                        if (isUnlocked) {
+                          handleOpenGame(stage)
+                        } else {
+                          handleSpeakText(`Complete Stage ${stage.stage_number - 1} first to unlock this stage!`)
+                        }
+                      }}
+                      title={isUnlocked ? `Click to play Stage ${stage.stage_number}` : `Locked — Complete Stage ${stage.stage_number - 1} first`}
                     >
+                      {/* Pulse aura on current active stage */}
+                      {isCurrent && <div className="journey-pulse-ring" />}
+
+                      {/* Bouncing Here badge on current stage */}
+                      {isCurrent && <div className="journey-here-badge">Here! 👇</div>}
+
+                      {/* Circular Bubble Button */}
                       <div
-                        className={`stage-pin-badge ${isCompleted ? 'completed' : ''} ${
-                          !isUnlocked ? 'locked' : ''
-                        }`}
+                        className="journey-bubble"
+                        style={{
+                          borderColor: isCompleted ? '#16a34a' : isCurrent ? selectedSkill.color : '#94a3b8',
+                          color: isCompleted ? '#16a34a' : selectedSkill.color,
+                        }}
                       >
-                        {isCompleted ? (
-                          <span className="material-symbols-outlined">check_circle</span>
-                        ) : !isUnlocked ? (
-                          <span className="material-symbols-outlined">lock</span>
-                        ) : (
-                          <span>{idx === 0 ? '🌱' : idx === 1 ? '🛶' : '⭐'}</span>
+                        <span>{nodeEmoji}</span>
+
+                        {isCompleted && (
+                          <div className="journey-check-badge">
+                            <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>check</span>
+                          </div>
+                        )}
+
+                        {!isUnlocked && (
+                          <div className="journey-lock-overlay">
+                            <span className="material-symbols-outlined" style={{ fontSize: '28px' }}>lock</span>
+                          </div>
                         )}
                       </div>
 
-                      <span className="stage-number-tag">Stage {stage.stage_number}</span>
-                      <h4 className="stage-node-title">{stage.title}</h4>
-
-                      <span className={`stage-difficulty-tag ${diffClass}`}>
-                        {stage.difficulty}
-                      </span>
-
-                      <p className="stage-node-desc">{stage.description}</p>
-
-                      <div className="stage-rewards-strip">
-                        <span>+{stage.xp_reward} XP</span>
-                        <span>•</span>
-                        <span>⭐⭐⭐</span>
+                      {/* Label Pill */}
+                      <div className="journey-node-pill">
+                        <span className="journey-node-title">
+                          Stage {stage.stage_number}: {stage.title.replace(/^Stage \d+:\s*/, '')}
+                        </span>
+                        <span className="journey-node-sub">
+                          {isCompleted ? 'Completed! 🌟 Replay' : isCurrent ? 'Tap to Play! 🚀' : 'Locked 🔒'} • +{stage.xp_reward} XP
+                        </span>
                       </div>
-
-                      <button
-                        className={`btn-play-stage ${isCompleted ? 'replay' : ''}`}
-                        disabled={!isUnlocked}
-                        onClick={() => handleOpenGame(stage)}
-                      >
-                        {isCompleted ? (
-                          <>
-                            <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>
-                              refresh
-                            </span>
-                            <span>Play Again</span>
-                          </>
-                        ) : !isUnlocked ? (
-                          <>
-                            <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>
-                              lock
-                            </span>
-                            <span>Complete Stage {stage.stage_number - 1} First</span>
-                          </>
-                        ) : (
-                          <>
-                            <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>
-                              play_arrow
-                            </span>
-                            <span>Start Stage {stage.stage_number}</span>
-                          </>
-                        )}
-                      </button>
                     </div>
                   )
                 })}
+
+                {/* Node 4: Final Achievement Milestone (Trophy 🏆) */}
+                {(() => {
+                  const allDone = stagesProgress[1] && stagesProgress[2] && stagesProgress[3]
+                  return (
+                    <div 
+                      className="journey-node-row shift-center"
+                      onClick={() => {
+                        if (allDone) {
+                          setShowCelebration(true)
+                          handleSpeakText('Congratulations! You completed the entire literacy quest! You are a reading champion!')
+                        } else {
+                          handleSpeakText('Complete all three stages to unlock the golden champion trophy!')
+                        }
+                      }}
+                    >
+                      <div className={`trophy-milestone-box ${allDone ? 'unlocked' : ''}`}>
+                        <div className="trophy-sparkle-1">✨</div>
+                        <div className="trophy-sparkle-2">✨</div>
+                        <span>🏆</span>
+                      </div>
+                      <div className="trophy-pill-tag">
+                        {allDone ? '🎉 Champion Quest Unlocked! 🎉' : 'Final Goal • Quest Trophy 🏆'}
+                      </div>
+                    </div>
+                  )
+                })()}
               </div>
-            </div>
+            </section>
 
             {/* Expert Guidance & Rules Inspector Card */}
             <div className="rules-applied-card">
