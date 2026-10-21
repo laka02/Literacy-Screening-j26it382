@@ -23,20 +23,23 @@ async def get_user_from_header(authorization: Optional[str]):
 
 
 class GeneratePlanRequest(BaseModel):
-    skill: str = Field(..., description="Skill category: writing, speaking, reading, vocabulary")
-    score: Optional[float] = Field(None, ge=0, le=100)
-    previous_score: Optional[float] = Field(None, ge=0, le=100)
-    grade: Optional[str] = "4"
+    skill: Optional[str] = Field(None, description="Skill category: writing, speaking, reading, vocabulary")
+    skill_type: Optional[str] = None
+    score: Optional[Any] = None
+    current_score: Optional[Any] = None
+    previous_score: Optional[Any] = None
+    grade: Optional[Any] = "4"
 
 
 class CompleteStageRequest(BaseModel):
-    skill: str
-    stage_number: int
-    stage_title: str
-    score: int = Field(..., ge=0, le=100)
-    xp_earned: int = 50
-    hints_used: int = 0
-    attempts: int = 1
+    skill: Optional[str] = "writing"
+    skill_type: Optional[str] = None
+    stage_number: Optional[Any] = 1
+    stage_title: Optional[str] = "Stage 1"
+    score: Optional[Any] = 100
+    xp_earned: Optional[Any] = 50
+    hints_used: Optional[Any] = 0
+    attempts: Optional[Any] = 1
 
 
 @router.get("/skills")
@@ -153,9 +156,24 @@ async def generate_plan(
     payload = await get_user_from_header(authorization)
     target_email = payload.get("email") if payload else (email.strip().lower() if email else None)
 
-    grade = data.grade or "4"
-    user_score = data.score if data.score is not None else 65.0
-    prev_score = data.previous_score
+    target_skill = (data.skill or data.skill_type or "writing").strip().lower()
+
+    # Safely parse user score
+    raw_score = data.score if data.score is not None else data.current_score
+    try:
+        user_score = float(raw_score) if raw_score is not None else 65.0
+    except (ValueError, TypeError):
+        user_score = 65.0
+
+    # Safely parse previous score
+    raw_prev = data.previous_score
+    try:
+        prev_score = float(raw_prev) if raw_prev is not None else None
+    except (ValueError, TypeError):
+        prev_score = None
+
+    # Safely parse grade
+    grade = str(data.grade).strip() if data.grade is not None else "4"
 
     # Check database for past completed exercises of this skill to infer previous_score
     if target_email:
@@ -163,13 +181,13 @@ async def generate_plan(
         if parent:
             grade = str(parent.get("grade", grade))
             completed = parent.get("completed_exercises", [])
-            skill_exs = [e for e in completed if data.skill.lower() in e.get("skill_category", "").lower()]
+            skill_exs = [e for e in completed if target_skill in e.get("skill_category", "").lower()]
             if skill_exs:
                 prev_score = skill_exs[-1].get("score", 60)
 
     # Use expert rules engine
     plan_output = generate_adaptive_plan(
-        skill_type=data.skill,
+        skill_type=target_skill,
         current_score=user_score,
         previous_score=prev_score,
         grade=grade
@@ -196,17 +214,25 @@ async def complete_stage(
     if not target_email:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User email required.")
 
+    target_skill = (data.skill or data.skill_type or "writing").strip().lower()
+    stage_num = int(data.stage_number) if data.stage_number is not None else 1
+    stage_ttl = str(data.stage_title or f"Stage {stage_num}")
+    score_val = int(float(data.score)) if data.score is not None else 100
+    xp_val = int(data.xp_earned) if data.xp_earned is not None else 50
+    hints_val = int(data.hints_used) if data.hints_used is not None else 0
+    attempts_val = int(data.attempts) if data.attempts is not None else 1
+
     now_str = datetime.now().strftime("%b %d, %Y, %I:%M %p")
     exercise_entry = {
-        "id": f"MAP-{data.skill.upper()}-{data.stage_number}-{int(datetime.now().timestamp())}",
-        "title": f"{data.stage_title} (Stage {data.stage_number})",
-        "skill_category": f"{data.skill.capitalize()} Adaptive Plan",
-        "score": data.score,
+        "id": f"MAP-{target_skill.upper()}-{stage_num}-{int(datetime.now().timestamp())}",
+        "title": f"{stage_ttl} (Stage {stage_num})",
+        "skill_category": f"{target_skill.capitalize()} Adaptive Plan",
+        "score": score_val,
         "status": "Completed",
         "date": now_str,
-        "xp_earned": data.xp_earned,
-        "hints_used": data.hints_used,
-        "attempts": data.attempts,
+        "xp_earned": xp_val,
+        "hints_used": hints_val,
+        "attempts": attempts_val,
     }
 
     # Push to parent document
@@ -214,7 +240,7 @@ async def complete_stage(
         {"parent_email": target_email},
         {
             "$push": {"completed_exercises": exercise_entry},
-            "$inc": {"xp_points": data.xp_earned, "stars_count": 3}
+            "$inc": {"xp_points": xp_val, "stars_count": 3}
         }
     )
 

@@ -84,19 +84,30 @@ export const getAvailableSkills = async (email?: string) => {
 
 export const generatePlan = async (
   skill: string,
-  score?: number,
-  previousScore?: number,
-  grade?: string,
+  score?: number | string,
+  previousScore?: number | string,
+  grade?: string | number,
   email?: string
 ): Promise<AdaptivePlanResponse> => {
   const params = email ? { email } : {}
   const res = await api.post(
     '/generate',
-    { skill, score, previous_score: previousScore, grade },
+    {
+      skill,
+      skill_type: skill,
+      score: score !== undefined && score !== null ? Number(score) : undefined,
+      current_score: score !== undefined && score !== null ? Number(score) : undefined,
+      previous_score:
+        previousScore !== undefined && previousScore !== null
+          ? Number(previousScore)
+          : undefined,
+      grade: grade !== undefined && grade !== null ? String(grade) : '4',
+    },
     { params }
   )
   return res.data
 }
+
 
 export const completeStageApi = async (
   skill: string,

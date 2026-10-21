@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getUser, isAuthenticated } from '../../api/auth'
 import {
@@ -10,6 +10,11 @@ import {
   StageItem,
 } from '../../api/plan'
 import './PersonalPlan.css'
+
+const ALPHABET_LIST = [
+  'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
+  'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'
+]
 
 const DEFAULT_SKILLS: SkillItem[] = [
   {
@@ -91,6 +96,151 @@ export default function PersonalPlan() {
   // Celebration modal state
   const [showCelebration, setShowCelebration] = useState<boolean>(false)
   const [lastCompletedStage, setLastCompletedStage] = useState<StageItem | null>(null)
+
+  // Handwriting Studio (Letter Quest) State
+  const canvasRef = useRef<HTMLCanvasElement | null>(null)
+  const [isDrawing, setIsDrawing] = useState<boolean>(false)
+  const [strokePointsCount, setStrokePointsCount] = useState<number>(0)
+  const [penColor, setPenColor] = useState<string>('#0058be')
+  const [activeWritingLetter, setActiveWritingLetter] = useState<string>('B')
+  const [writingFeedback, setWritingFeedback] = useState<string>('Great! Keep practicing!')
+
+  // Reset or initialize writing studio canvas when game stage opens
+  useEffect(() => {
+    if (activeGameStage) {
+      const initialLetter = activeGameStage.task_data?.letter || 'B'
+      setActiveWritingLetter(initialLetter)
+      setStrokePointsCount(0)
+      setWritingFeedback('Great! Keep practicing!')
+      setTimeout(() => {
+        const canvas = canvasRef.current
+        if (canvas) {
+          const ctx = canvas.getContext('2d')
+          if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height)
+        }
+      }, 100)
+    }
+  }, [activeGameStage])
+
+  // Canvas drawing coordinate mapper (responsive scaling)
+  const getCanvasCoords = (
+    e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>
+  ) => {
+    const canvas = canvasRef.current
+    if (!canvas) return { x: 0, y: 0 }
+    const rect = canvas.getBoundingClientRect()
+    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX
+    const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY
+    const scaleX = canvas.width / rect.width
+    const scaleY = canvas.height / rect.height
+    return {
+      x: (clientX - rect.left) * scaleX,
+      y: (clientY - rect.top) * scaleY,
+    }
+  }
+
+  const startDrawing = (
+    e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>
+  ) => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+
+    const { x, y } = getCanvasCoords(e)
+    ctx.beginPath()
+    ctx.moveTo(x, y)
+    ctx.lineWidth = 14
+    ctx.lineCap = 'round'
+    ctx.lineJoin = 'round'
+    ctx.strokeStyle = penColor
+    setIsDrawing(true)
+    setStrokePointsCount((prev) => prev + 1)
+  }
+
+  const draw = (
+    e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>
+  ) => {
+    if (!isDrawing) return
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+
+    const { x, y } = getCanvasCoords(e)
+    ctx.lineTo(x, y)
+    ctx.stroke()
+    setStrokePointsCount((prev) => prev + 1)
+  }
+
+  const stopDrawing = () => {
+    if (!isDrawing) return
+    setIsDrawing(false)
+    const canvas = canvasRef.current
+    if (canvas) {
+      const ctx = canvas.getContext('2d')
+      if (ctx) ctx.closePath()
+    }
+  }
+
+  const clearCanvas = () => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
+    setStrokePointsCount(0)
+    setWritingFeedback('Canvas cleared! Try tracing again ✏️')
+  }
+
+  const handleSwitchLetter = (letter: string) => {
+    setActiveWritingLetter(letter)
+    setStrokePointsCount(0)
+    setWritingFeedback(`Practicing letter ${letter}! Trace it on the canvas ✏️`)
+    clearCanvas()
+    handleSpeakText(`Letter ${letter}! Let's trace letter ${letter}!`)
+  }
+
+  const handleCheckWriting = async () => {
+    if (strokePointsCount < 8) {
+      setWritingFeedback('✏️ Trace the letter on the canvas above first!')
+      handleSpeakText('Trace the letter first with your finger or mouse!')
+      return
+    }
+
+    setWritingFeedback('🌟 Excellent! Letter traced with great accuracy! +10 Stars!')
+    handleSpeakText(
+      `Great handwriting! You conquered letter ${activeWritingLetter}! Stage completed!`
+    )
+
+    if (activeGameStage) {
+      try {
+        await completeStageApi(
+          selectedSkill?.id || 'writing',
+          activeGameStage.stage_number,
+          activeGameStage.title,
+          100,
+          activeGameStage.xp_reward,
+          hintsUsedCount,
+          attemptsCount,
+          currentUser?.email
+        )
+      } catch (e) {
+        console.warn('Stage save warning:', e)
+      }
+
+      setStagesProgress((prev) => ({
+        ...prev,
+        [activeGameStage.stage_number]: true,
+      }))
+
+      setTimeout(() => {
+        setLastCompletedStage(activeGameStage)
+        setActiveGameStage(null)
+        setShowCelebration(true)
+      }, 850)
+    }
+  }
 
   useEffect(() => {
     if (!isAuthenticated()) {
@@ -617,102 +767,340 @@ export default function PersonalPlan() {
       </main>
 
       {/* ══════════════════════════════════════════════════════════════════
-         STEP 3: PLAYABLE MINI-GAME MODAL
+         STEP 3: PLAYABLE MINI-GAME / LETTER QUEST WRITING STUDIO
          ══════════════════════════════════════════════════════════════════ */}
       {activeGameStage && (
-        <div className="game-modal-backdrop" onClick={() => setActiveGameStage(null)}>
-          <div className="game-modal-box" onClick={(e) => e.stopPropagation()}>
-            <div className="game-modal-header">
-              <span className="game-stage-pill">
-                Stage {activeGameStage.stage_number} • {activeGameStage.difficulty}
-              </span>
-              <button className="btn-game-close" onClick={() => setActiveGameStage(null)}>
-                <span className="material-symbols-outlined">close</span>
-              </button>
-            </div>
-
-            {/* Mascot Dialogue */}
-            <div className="game-mascot-dialogue">
-              <div className="game-mascot-avatar">{selectedSkill?.guide_avatar || '🦁'}</div>
-              <div className="game-mascot-speech">
-                <strong>{selectedSkill?.animal_guide} says:</strong> &quot;Hello young explorer!
-                Look closely, listen to the words, and choose the best answer to clear this stage!&quot;
-              </div>
-            </div>
-
-            {/* Question prompt */}
-            <div className="game-question-box">
-              <h3 className="game-question-text">{activeGameStage.task_data.question}</h3>
+        (selectedSkill?.id === 'writing' || activeGameStage.task_data?.type === 'writing_trace') ? (
+          /* Letter Quest Handwriting Studio (Matching child-friendly jungle theme) */
+          <div className="letter-quest-overlay">
+            {/* Top Navigation */}
+            <header className="letter-quest-header">
               <button
-                className="btn-speak-question"
-                onClick={() => handleSpeakText(activeGameStage.task_data.question)}
+                className="letter-quest-back-btn"
+                onClick={() => setActiveGameStage(null)}
+                title="Back to Quest Map"
               >
-                <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>
-                  volume_up
-                </span>
-                <span>Listen to Question</span>
+                <span className="material-symbols-outlined">arrow_back</span>
               </button>
-            </div>
+              <h1 className="letter-quest-title">
+                Letter Quest — Practice '{activeWritingLetter}'
+              </h1>
+              <div className="letter-quest-stars-pill">
+                <span>120</span>
+                <span className="material-symbols-outlined" style={{ color: '#eab308' }}>
+                  stars
+                </span>
+              </div>
+            </header>
 
-            {/* Options selection */}
-            <div className="game-options-grid">
-              {activeGameStage.task_data.options.map((opt, idx) => {
-                let statusClass = ''
-                if (selectedOption === idx) {
-                  statusClass = answerStatus === 'correct' ? 'correct' : 'wrong'
-                }
-                return (
+            {/* Main Content */}
+            <main className="letter-quest-main">
+              {/* Progress Bar */}
+              <div className="letter-quest-progress-wrap">
+                <span className="letter-quest-progress-tag">
+                  Letter {Math.max(1, ALPHABET_LIST.indexOf(activeWritingLetter) + 1)} of{' '}
+                  {activeGameStage.task_data?.total_letters || 26}
+                </span>
+                <div className="letter-quest-progress-track">
+                  <div
+                    className="letter-quest-progress-fill"
+                    style={{
+                      width: `${Math.min(
+                        100,
+                        Math.round(
+                          ((Math.max(1, ALPHABET_LIST.indexOf(activeWritingLetter) + 1)) /
+                            (activeGameStage.task_data?.total_letters || 26)) *
+                            100
+                        )
+                      )}%`,
+                    }}
+                  />
+                </div>
+              </div>
+
+              {/* CAIRE Recommendation Card (Glassmorphism) */}
+              <div className="letter-quest-caire-card">
+                <div className="caire-avatar-floating">
+                  <img
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuA0DpR-pjqWdo2m0MR_7NA7oPi5x-Lsv-W00qC8O4gH5ZFQ8seu2tT8Mt0Bj9cM5VtjiHhfXhXImR9W1zDTz-j-HTjd8rjzCVE3fiVLvpRrLWOM6nYaDmQ0ezsb5lAy0aZEUWPj95njPtiRAgPfbUc7GWHZ1PM6DAzZzT5JQ1GoQcy18MXGmaQw3eymIfOqnEHZWlNQJ19lc1m94EpTgsZap8WPkAKbTLN2_RpL2sQpbq_ouhBTtVc4Dg"
+                    alt="CAIRE Robot Mascot"
+                  />
+                </div>
+                <div className="caire-speech-content">
+                  <strong>🤖 CAIRE says:</strong>
+                  <p>
+                    {selectedSkill?.current_score !== undefined && selectedSkill.current_score < 45
+                      ? "Writing score < 45 detected: We're starting with letter stroke fundamentals before words! Trace smoothly along the lines."
+                      : "Let's practice your writing skills! Trace each stroke smoothly along the handwriting lines."}
+                  </p>
+                </div>
+              </div>
+
+              {/* Main Bento Grid Layout */}
+              <div className="letter-quest-bento-grid">
+                {/* Left Column: Letter Display & Sound Card */}
+                <div className="letter-quest-left-card">
+                  {/* Floating 3D Stickers */}
+                  <div className="floating-sticker sticker-1">⭐</div>
+                  <div className="floating-sticker sticker-2">✏️</div>
+                  <div className="floating-sticker sticker-3">🎨</div>
+
                   <button
-                    key={idx}
-                    className={`btn-option-card ${statusClass}`}
-                    onClick={() => handleSelectOption(idx)}
+                    className="btn-letter-sound"
+                    onClick={() =>
+                      handleSpeakText(
+                        activeGameStage.task_data?.phonics_sound ||
+                          `${activeWritingLetter} says /${activeWritingLetter.toLowerCase()}/. Listen and trace!`
+                      )
+                    }
+                    title="Listen to Phonics Sound"
                   >
-                    <span>{opt}</span>
-                    {selectedOption === idx && answerStatus === 'correct' && (
-                      <span className="material-symbols-outlined" style={{ color: '#16a34a' }}>
-                        check_circle
-                      </span>
-                    )}
-                    {selectedOption === idx && answerStatus === 'wrong' && (
-                      <span className="material-symbols-outlined" style={{ color: '#ef4444' }}>
-                        cancel
-                      </span>
-                    )}
+                    <span className="material-symbols-outlined">volume_up</span>
                   </button>
-                )
-              })}
-            </div>
 
-            {/* Hint & Attempts Section */}
-            <div className="game-hint-section">
-              {!showHint ? (
+                  <div className="giant-letter-display">
+                    <span>{activeWritingLetter}</span>
+                    <span className="lower">{activeWritingLetter.toLowerCase()}</span>
+                  </div>
+
+                  <div className="letter-phonics-label">
+                    {activeGameStage.task_data?.phonics_sound ||
+                      `/${activeWritingLetter.toLowerCase()}/ as in Bear 🐻`}
+                  </div>
+
+                  {/* Quick A-Z Letter Selector Bar */}
+                  <div className="letter-quick-strip">
+                    <span className="letter-strip-title">Alphabet Quick Pick (A–Z)</span>
+                    <div className="letter-strip-scroll">
+                      {(activeGameStage.task_data?.letters_set || ALPHABET_LIST).map((ltr: string) => (
+                        <button
+                          key={ltr}
+                          className={`letter-strip-btn ${activeWritingLetter === ltr ? 'active' : ''}`}
+                          onClick={() => handleSwitchLetter(ltr)}
+                        >
+                          {ltr}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Right Column: Handwriting Ruled Tracing Canvas */}
+                <div className="letter-quest-right-card">
+                  {/* Guide/Instructions Header */}
+                  <div className="handwriting-header">
+                    <p className="handwriting-instruction-pill">
+                      <span className="material-symbols-outlined" style={{ color: '#16a34a' }}>
+                        draw
+                      </span>
+                      <span>Trace the letter with your finger or mouse ✏️</span>
+                    </p>
+
+                    {/* Stroke Guide Mini */}
+                    <div className="stroke-guide-mini">
+                      <div className="stroke-step-item">
+                        <span className="stroke-step-num" style={{ color: '#2563eb' }}>1</span>
+                        <span className="material-symbols-outlined" style={{ fontSize: '15px', color: '#2563eb' }}>
+                          arrow_downward
+                        </span>
+                      </div>
+                      <div className="stroke-step-item">
+                        <span className="stroke-step-num" style={{ color: '#ea580c' }}>2</span>
+                        <span
+                          className="material-symbols-outlined"
+                          style={{ fontSize: '15px', color: '#ea580c', transform: 'rotate(90deg)' }}
+                        >
+                          turn_right
+                        </span>
+                      </div>
+                      <div className="stroke-step-item">
+                        <span className="stroke-step-num" style={{ color: '#eab308' }}>3</span>
+                        <span
+                          className="material-symbols-outlined"
+                          style={{ fontSize: '15px', color: '#eab308', transform: 'rotate(90deg)' }}
+                        >
+                          turn_right
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Interactive Ruled Handwriting Canvas Box */}
+                  <div className="handwriting-canvas-card">
+                    <div className="handwriting-lines-bg" />
+                    <div className="dashed-midline-rule" />
+                    <div className="faint-letter-guide">
+                      {activeWritingLetter}
+                    </div>
+                    <canvas
+                      ref={canvasRef}
+                      width={800}
+                      height={420}
+                      className="tracing-canvas"
+                      onMouseDown={startDrawing}
+                      onMouseMove={draw}
+                      onMouseUp={stopDrawing}
+                      onMouseLeave={stopDrawing}
+                      onTouchStart={startDrawing}
+                      onTouchMove={draw}
+                      onTouchEnd={stopDrawing}
+                    />
+                  </div>
+
+                  {/* Canvas Toolbar */}
+                  <div className="canvas-tools-bar">
+                    <div className="pen-colors-row">
+                      <span style={{ fontSize: '12.5px', fontWeight: 800, color: '#64748b' }}>
+                        Ink:
+                      </span>
+                      {[
+                        { color: '#0058be', name: 'Blue' },
+                        { color: '#16a34a', name: 'Green' },
+                        { color: '#9333ea', name: 'Purple' },
+                        { color: '#ea580c', name: 'Orange' },
+                      ].map((c) => (
+                        <button
+                          key={c.color}
+                          className={`pen-color-dot ${penColor === c.color ? 'selected' : ''}`}
+                          style={{ backgroundColor: c.color }}
+                          onClick={() => setPenColor(c.color)}
+                          title={c.name}
+                        />
+                      ))}
+                    </div>
+
+                    <button className="btn-clear-canvas" onClick={clearCanvas}>
+                      <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>
+                        refresh
+                      </span>
+                      <span>Clear &amp; Retry</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Bottom Action Area */}
+              <div className="letter-quest-bottom">
+                <div className="letter-quest-encouragement-pill">
+                  <span
+                    className="material-symbols-outlined"
+                    style={{ color: '#16a34a', fontVariationSettings: "'FILL' 1" }}
+                  >
+                    mood
+                  </span>
+                  <span>{writingFeedback}</span>
+                  <span className="stars-add">+10 Stars</span>
+                </div>
+
+                <button className="chunky-btn-check" onClick={handleCheckWriting}>
+                  <span
+                    className="material-symbols-outlined"
+                    style={{ fontVariationSettings: "'FILL' 1" }}
+                  >
+                    fact_check
+                  </span>
+                  <span>Check My Writing</span>
+                </button>
+              </div>
+            </main>
+          </div>
+        ) : (
+          /* Standard Quiz Modal for Reading, Speaking, Listening */
+          <div className="game-modal-backdrop" onClick={() => setActiveGameStage(null)}>
+            <div className="game-modal-box" onClick={(e) => e.stopPropagation()}>
+              <div className="game-modal-header">
+                <span className="game-stage-pill">
+                  Stage {activeGameStage.stage_number} • {activeGameStage.difficulty}
+                </span>
+                <button className="btn-game-close" onClick={() => setActiveGameStage(null)}>
+                  <span className="material-symbols-outlined">close</span>
+                </button>
+              </div>
+
+              {/* Mascot Dialogue */}
+              <div className="game-mascot-dialogue">
+                <div className="game-mascot-avatar">{selectedSkill?.guide_avatar || '🦁'}</div>
+                <div className="game-mascot-speech">
+                  <strong>{selectedSkill?.animal_guide} says:</strong> &quot;Hello young explorer!
+                  Look closely, listen to the words, and choose the best answer to clear this stage!&quot;
+                </div>
+              </div>
+
+              {/* Question prompt */}
+              <div className="game-question-box">
+                <h3 className="game-question-text">{activeGameStage.task_data.question}</h3>
                 <button
-                  className="btn-game-hint"
-                  onClick={() => {
-                    setShowHint(true)
-                    setHintsUsedCount((h) => h + 1)
-                  }}
+                  className="btn-speak-question"
+                  onClick={() => handleSpeakText(activeGameStage.task_data.question)}
                 >
                   <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>
-                    lightbulb
+                    volume_up
                   </span>
-                  <span>Ask {selectedSkill?.animal_guide.split(' ')[0]} for a Hint (Rule R18, R22)</span>
+                  <span>Listen to Question</span>
                 </button>
-              ) : (
-                <div className="game-hint-box">
-                  💡 <strong>Hint:</strong> {activeGameStage.task_data.hint}
-                </div>
-              )}
+              </div>
 
-              {attemptsCount > 1 && (
-                <span style={{ fontSize: '12px', color: '#64748b', fontWeight: 700 }}>
-                  Attempt #{attemptsCount}
-                </span>
-              )}
+              {/* Options selection */}
+              <div className="game-options-grid">
+                {activeGameStage.task_data.options.map((opt, idx) => {
+                  let statusClass = ''
+                  if (selectedOption === idx) {
+                    statusClass = answerStatus === 'correct' ? 'correct' : 'wrong'
+                  }
+                  return (
+                    <button
+                      key={idx}
+                      className={`btn-option-card ${statusClass}`}
+                      onClick={() => handleSelectOption(idx)}
+                    >
+                      <span>{opt}</span>
+                      {selectedOption === idx && answerStatus === 'correct' && (
+                        <span className="material-symbols-outlined" style={{ color: '#16a34a' }}>
+                          check_circle
+                        </span>
+                      )}
+                      {selectedOption === idx && answerStatus === 'wrong' && (
+                        <span className="material-symbols-outlined" style={{ color: '#ef4444' }}>
+                          cancel
+                        </span>
+                      )}
+                    </button>
+                  )
+                })}
+              </div>
+
+              {/* Hint & Attempts Section */}
+              <div className="game-hint-section">
+                {!showHint ? (
+                  <button
+                    className="btn-game-hint"
+                    onClick={() => {
+                      setShowHint(true)
+                      setHintsUsedCount((h) => h + 1)
+                    }}
+                  >
+                    <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>
+                      lightbulb
+                    </span>
+                    <span>Ask {selectedSkill?.animal_guide.split(' ')[0]} for a Hint (Rule R18, R22)</span>
+                  </button>
+                ) : (
+                  <div className="game-hint-box">
+                    💡 <strong>Hint:</strong> {activeGameStage.task_data.hint}
+                  </div>
+                )}
+
+                {attemptsCount > 1 && (
+                  <span style={{ fontSize: '12px', color: '#64748b', fontWeight: 700 }}>
+                    Attempt #{attemptsCount}
+                  </span>
+                )}
+              </div>
             </div>
           </div>
-        </div>
+        )
       )}
+
 
       {/* ══════════════════════════════════════════════════════════════════
          STEP 4: CELEBRATION MODAL (Reward & Map Progression)

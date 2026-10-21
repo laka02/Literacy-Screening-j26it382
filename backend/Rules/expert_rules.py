@@ -201,64 +201,201 @@ def generate_adaptive_plan(skill_type: str, current_score: float, previous_score
     evaluation["rules_applied"].append(meta["rule_tag"])
     evaluation["rules_applied"].extend(["R08", "R10", "R22", "R23", "R33", "R34", "R35"])
 
-    # 3-Stage Adventure Plan
-    stages = [
-        {
-            "stage_number": 1,
-            "title": f"Stage 1: {meta['guide'].split()[0]}'s Warm-up Safari",
-            "difficulty": "Easy (Foundational)",
-            "description": "Start with friendly illustrated warm-ups with audio hints and visual guides.",
-            "rules": ["R01", "R08", "R09", "R22"],
-            "xp_reward": 50,
-            "stars": 3,
-            "locked": False,
-            "status": "Ready",
-            "task_data": {
-                "question": f"Grade {grade} Warm-up: Identify the correct match for the illustrated clue.",
-                "hint": "Listen carefully to the first sound and look at the picture clue! 🌿",
-                "options": ["Sun ☀️", "Moon 🌙", "Star ⭐"],
-                "correct_index": 0,
+    # Adaptive 3-Stage Plan Generation
+    if selected_skill == "writing":
+        # Rule evaluation for Writing:
+        # Score < 45: R01, R04, R08, R09 (Foundational letter tracing A-Z, stroke physics)
+        # Score 45-74: R02, R04, R10, R22 (Guided letter formation, word blends)
+        # Score >= 75: R03, R04, R16, R25 (Challenge word flow, sentence writing)
+        if band == "low":
+            evaluation["rules_applied"].extend(["R01", "R04", "R08", "R09", "R21", "R22"])
+            stage1_title = "Stage 1: Letter Quest — Practice 'B' (A–Z Tracing)"
+            stage1_diff = "Foundational (Letter Tracing)"
+            stage1_desc = "Trace capital 'B' and lowercase 'b' along handwriting guide lines with stroke arrows."
+            stage1_rules = ["R01", "R04", "R08", "R09", "R21", "R22"]
+            stage1_letter = "B"
+            stage1_lower = "b"
+            stage1_sound = "/b/ as in Bear & Butterfly 🐻"
+            stage1_hint = "Start from the top dot and trace down straight to the bottom! ✏️"
+        elif band == "medium":
+            evaluation["rules_applied"].extend(["R02", "R04", "R08", "R10", "R22"])
+            stage1_title = "Stage 1: Letter Quest — Practice 'B' (Stroke Precision)"
+            stage1_diff = "Guided Practice (Letter Formation)"
+            stage1_desc = "Master the curve radius and straight spine alignment of letter 'B' to avoid reversals."
+            stage1_rules = ["R02", "R04", "R08", "R10", "R22"]
+            stage1_letter = "B"
+            stage1_lower = "b"
+            stage1_sound = "/b/ as in Boat & Bird ⛵"
+            stage1_hint = "Make the top loop first, then round out the bottom loop smoothly!"
+        else:
+            evaluation["rules_applied"].extend(["R03", "R04", "R10", "R16"])
+            stage1_title = "Stage 1: Letter Quest — Fast & Fluent Tracing"
+            stage1_diff = "Proficient (Stroke Agility)"
+            stage1_desc = "Trace clean letterforms with consistent handwriting slant and pencil stamina."
+            stage1_rules = ["R03", "R04", "R10", "R16"]
+            stage1_letter = "B"
+            stage1_lower = "b"
+            stage1_sound = "/b/ as in Brave & Brilliant ⭐"
+            stage1_hint = "Keep a steady, relaxed grip and trace without pausing mid-curve!"
+
+        stages = [
+            {
+                "stage_number": 1,
+                "title": stage1_title,
+                "difficulty": stage1_diff,
+                "description": stage1_desc,
+                "rules": stage1_rules,
+                "xp_reward": 50,
+                "stars": 3,
+                "locked": False,
+                "status": "Ready",
+                "task_data": {
+                    "type": "writing_trace",
+                    "letter": stage1_letter,
+                    "letter_lower": stage1_lower,
+                    "phonics_sound": stage1_sound,
+                    "word_example": "Bear",
+                    "letter_number": 2,
+                    "total_letters": 26,
+                    "letters_set": [
+                        "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M",
+                        "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"
+                    ],
+                    "stroke_steps": [
+                        {"step": 1, "instruction": "Top-to-bottom straight spine", "icon": "arrow_downward", "color": "#3b82f6"},
+                        {"step": 2, "instruction": "Top curve to midline", "icon": "turn_right", "color": "#f97316"},
+                        {"step": 3, "instruction": "Bottom curve to baseline", "icon": "turn_right", "color": "#eab308"}
+                    ],
+                    "hint": stage1_hint,
+                    "question": f"Letter Quest: Practice tracing uppercase '{stage1_letter}' and lowercase '{stage1_lower}'",
+                    "options": ["Trace Letter 'B'", "Listen to Sound /b/", "Clear & Retry"],
+                    "correct_index": 0
+                }
+            },
+            {
+                "stage_number": 2,
+                "title": "Stage 2: Word Quest — Blends & Sight Words ('BAT')",
+                "difficulty": "Moderate (Word Formation)",
+                "description": "Combine learned letters into 3-letter words with correct letter spacing.",
+                "rules": ["R02", "R08", "R10", "R22", "R23"],
+                "xp_reward": 75,
+                "stars": 3,
+                "locked": True,
+                "status": "Locked",
+                "task_data": {
+                    "type": "writing_trace",
+                    "letter": "BAT",
+                    "letter_lower": "bat",
+                    "phonics_sound": "/b-æ-t/ as in Cricket Bat 🏏",
+                    "word_example": "Bat",
+                    "letter_number": 2,
+                    "total_letters": 5,
+                    "letters_set": ["BAT", "BALL", "BOOK", "BIRD", "BELL"],
+                    "stroke_steps": [
+                        {"step": 1, "instruction": "Trace letter B", "icon": "draw", "color": "#3b82f6"},
+                        {"step": 2, "instruction": "Trace letter A", "icon": "draw", "color": "#f97316"},
+                        {"step": 3, "instruction": "Trace letter T", "icon": "draw", "color": "#16a34a"}
+                    ],
+                    "hint": "Leave a tiny finger-space between each letter so words are easy to read! 📏",
+                    "question": "Word Quest: Practice writing the word 'BAT'",
+                    "options": ["bat", "tab", "cat"],
+                    "correct_index": 0
+                }
+            },
+            {
+                "stage_number": 3,
+                "title": "Stage 3: Sentence Quest — Flow & Baseline Alignment",
+                "difficulty": "Challenge (Sentence Mastery)",
+                "description": "Write a complete Sri Lankan adventure sentence with neat capital letters and punctuation.",
+                "rules": ["R03", "R10", "R16", "R25", "R33"],
+                "xp_reward": 100,
+                "stars": 3,
+                "locked": True,
+                "status": "Locked",
+                "task_data": {
+                    "type": "writing_trace",
+                    "letter": "The Bear plays ball.",
+                    "letter_lower": "the bear plays ball.",
+                    "phonics_sound": "Fluent sentence writing challenge 🦁",
+                    "word_example": "The Bear plays ball.",
+                    "letter_number": 1,
+                    "total_letters": 3,
+                    "letters_set": ["The Bear plays ball.", "Birds fly high.", "Brave lions roar."],
+                    "stroke_steps": [
+                        {"step": 1, "instruction": "Start with Capital Letter", "icon": "format_size", "color": "#3b82f6"},
+                        {"step": 2, "instruction": "Keep letters on baseline", "icon": "horizontal_rule", "color": "#f97316"},
+                        {"step": 3, "instruction": "End with a full stop", "icon": "fiber_manual_record", "color": "#16a34a"}
+                    ],
+                    "hint": "Make sure your letters sit right on the bottom baseline! 🏰",
+                    "question": "Sentence Quest: Write the sentence 'The Bear plays ball.' neatly on the lines.",
+                    "options": [
+                        "The Bear plays ball.",
+                        "Bear the ball plays.",
+                        "The plays bear ball."
+                    ],
+                    "correct_index": 0
+                }
             }
-        },
-        {
-            "stage_number": 2,
-            "title": "Stage 2: River Crossing Adventure",
-            "difficulty": "Moderate (Guided Practice)",
-            "description": "Practice sentence rhythm and word blend precision with guided clues.",
-            "rules": ["R02", "R10", "R18", "R23"],
-            "xp_reward": 75,
-            "stars": 3,
-            "locked": True,
-            "status": "Locked",
-            "task_data": {
-                "question": f"Grade {grade} Guided Step: Complete the sentence using the right action word.",
-                "hint": "Think about what birds do in the blue sky! 🕊️",
-                "options": ["swim", "fly high", "crawl"],
-                "correct_index": 1,
+        ]
+    else:
+        # Generic 3-Stage Adventure Plan for other skills
+        stages = [
+            {
+                "stage_number": 1,
+                "title": f"Stage 1: {meta['guide'].split()[0]}'s Warm-up Safari",
+                "difficulty": "Easy (Foundational)",
+                "description": "Start with friendly illustrated warm-ups with audio hints and visual guides.",
+                "rules": ["R01", "R08", "R09", "R22"],
+                "xp_reward": 50,
+                "stars": 3,
+                "locked": False,
+                "status": "Ready",
+                "task_data": {
+                    "question": f"Grade {grade} Warm-up: Identify the correct match for the illustrated clue.",
+                    "hint": "Listen carefully to the first sound and look at the picture clue! 🌿",
+                    "options": ["Sun ☀️", "Moon 🌙", "Star ⭐"],
+                    "correct_index": 0,
+                }
+            },
+            {
+                "stage_number": 2,
+                "title": "Stage 2: River Crossing Adventure",
+                "difficulty": "Moderate (Guided Practice)",
+                "description": "Practice sentence rhythm and word blend precision with guided clues.",
+                "rules": ["R02", "R10", "R18", "R23"],
+                "xp_reward": 75,
+                "stars": 3,
+                "locked": True,
+                "status": "Locked",
+                "task_data": {
+                    "question": f"Grade {grade} Guided Step: Complete the sentence using the right action word.",
+                    "hint": "Think about what birds do in the blue sky! 🕊️",
+                    "options": ["swim", "fly high", "crawl"],
+                    "correct_index": 1,
+                }
+            },
+            {
+                "stage_number": 3,
+                "title": "Stage 3: Cloud Castle Challenge",
+                "difficulty": "Challenge (Mastery Stretch)",
+                "description": "Unlock the golden treasure chest with an advanced fluency and expression test!",
+                "rules": ["R03", "R10", "R16", "R25"],
+                "xp_reward": 100,
+                "stars": 3,
+                "locked": True,
+                "status": "Locked",
+                "task_data": {
+                    "question": f"Grade {grade} Champion Challenge: Pick the sentence with perfect phrasing and rhythm.",
+                    "hint": "Read smoothly without long pauses between words! 🏰",
+                    "options": [
+                        "The gentle deer drank sweet water by the lake.",
+                        "The drank gentle deer sweet by water.",
+                        "Deer gentle the water sweet lake."
+                    ],
+                    "correct_index": 0,
+                }
             }
-        },
-        {
-            "stage_number": 3,
-            "title": "Stage 3: Cloud Castle Challenge",
-            "difficulty": "Challenge (Mastery Stretch)",
-            "description": "Unlock the golden treasure chest with an advanced fluency and expression test!",
-            "rules": ["R03", "R10", "R16", "R25"],
-            "xp_reward": 100,
-            "stars": 3,
-            "locked": True,
-            "status": "Locked",
-            "task_data": {
-                "question": f"Grade {grade} Champion Challenge: Pick the sentence with perfect phrasing and rhythm.",
-                "hint": "Read smoothly without long pauses between words! 🏰",
-                "options": [
-                    "The gentle deer drank sweet water by the lake.",
-                    "The drank gentle deer sweet by water.",
-                    "Deer gentle the water sweet lake."
-                ],
-                "correct_index": 0,
-            }
-        }
-    ]
+        ]
 
     return {
         "skill": selected_skill,
