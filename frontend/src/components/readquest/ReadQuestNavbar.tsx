@@ -1,108 +1,119 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { ParentViewModal } from './ParentViewModal'
 
 interface ReadQuestNavbarProps {
   currentStep?: 'intro' | 'reading' | 'result'
   stars?: number
   showSteps?: boolean
   missionTitle?: string
+  progressPercent?: number
 }
 
 export const ReadQuestNavbar: React.FC<ReadQuestNavbarProps> = ({
   currentStep,
   stars = 450,
   showSteps = false,
-  missionTitle = 'Reading Mission 1'
+  missionTitle = 'Reading Adventure',
+  progressPercent = 65
 }) => {
   const navigate = useNavigate()
-  const [soundEnabled, setSoundEnabled] = React.useState(true)
-
-  const toggleSound = () => {
-    setSoundEnabled((prev) => !prev)
-    if ('speechSynthesis' in window) {
-      if (soundEnabled) {
-        window.speechSynthesis.cancel()
-      } else {
-        const u = new SpeechSynthesisUtterance('Audio guide enabled!')
-        u.rate = 1
-        window.speechSynthesis.speak(u)
-      }
-    }
-  }
+  const [showParentModal, setShowParentModal] = useState(false)
 
   return (
-    <header className="rq-navbar">
-      <div className="rq-navbar-left">
-        {showSteps && (
-          <button className="rq-nav-back-btn" onClick={() => navigate('/readquest')} title="Back to Adventures">
-            ←
-          </button>
-        )}
+    <>
+      <header className="rq-navbar glassmorphic-nav">
+        {/* Left: Back Button & Title */}
+        <div className="rq-navbar-left">
+          {showSteps ? (
+            <button
+              className="rq-nav-back-circle-btn"
+              onClick={() => navigate('/readquest')}
+              title="Back to Story Quests"
+              aria-label="Back to Story Quests"
+            >
+              ←
+            </button>
+          ) : (
+            <button
+              className="rq-nav-back-circle-btn"
+              onClick={() => navigate('/home')}
+              title="Return to Main Portal"
+              aria-label="Main Portal"
+            >
+              🏠
+            </button>
+          )}
 
-        <div className="rq-brand-group" onClick={() => navigate('/readquest')}>
-          <div className="rq-logo-icon">📖</div>
-          <div className="rq-brand-meta">
-            <div className="rq-brand-row">
-              <span className="rq-brand-title">ReadQuest</span>
-              <span className="rq-grade-badge">GRADE 3-5</span>
+          <div className="rq-brand-group" onClick={() => navigate('/readquest')} title="ReadQuest Home">
+            <h1 className="rq-brand-title">ReadQuest</h1>
+            <span className="rq-grade-badge">Grade 3-5</span>
+          </div>
+
+          {showSteps && (
+            <div className="rq-mission-pill-glass">
+              <span className="pill-dot" />
+              <span className="pill-text">{missionTitle}</span>
             </div>
-            <span className="rq-brand-sub">My Reading Adventure • CAIRE English</span>
-          </div>
+          )}
         </div>
 
+        {/* Center: Clean Progress Tracker matching Reference Image */}
         {showSteps && (
-          <div className="rq-mission-pill">
-            <span className="rq-pill-icon">🌴</span>
-            <span>{missionTitle}</span>
+          <div className="rq-center-progress-bar-wrap">
+            <div className="progress-labels-row">
+              <span className="progress-step-text">
+                {currentStep === 'intro' ? 'Step 1: Get Ready' : currentStep === 'reading' ? 'Step 2: Read Aloud 🎙️' : 'Step 3: Great Job! ⭐'}
+              </span>
+              <span className="progress-num-text">{progressPercent}%</span>
+            </div>
+            <div className="progress-track-cyan">
+              <div
+                className="progress-fill-cyan"
+                style={{ width: `${currentStep === 'intro' ? 35 : currentStep === 'reading' ? 70 : 100}%` }}
+              />
+            </div>
           </div>
         )}
-      </div>
 
-      {showSteps && (
-        <div className="rq-step-tracker">
-          <div className={`rq-step-item ${currentStep === 'intro' ? 'active' : 'completed'}`}>
-            <span className="rq-step-num">1</span>
-            <span className="rq-step-label">Story Intro</span>
-          </div>
-          <div className="rq-step-divider" />
-          <div className={`rq-step-item ${currentStep === 'reading' ? 'active' : currentStep === 'result' ? 'completed' : ''}`}>
-            <span className="rq-step-num">2</span>
-            <span className="rq-step-label">Voice Magic</span>
-          </div>
-          <div className="rq-step-divider" />
-          <div className={`rq-step-item ${currentStep === 'result' ? 'active' : ''}`}>
-            <span className="rq-step-num">3</span>
-            <span className="rq-step-label">Star Result</span>
-          </div>
-        </div>
-      )}
+        {/* Right: Parent View Button + Glowing Star Badge */}
+        <div className="rq-navbar-right">
+          {/* Dedicated Parent View Button */}
+          <button
+            className="rq-parent-view-btn"
+            onClick={() => setShowParentModal(true)}
+            title="View WPM, Accuracy & Parent Report"
+          >
+            <span>👨‍👩‍👧 Parent View</span>
+          </button>
 
-      <div className="rq-navbar-right">
-        <div className="rq-star-counter">
-          <span className="rq-star-icon">⭐</span>
-          <span className="rq-star-val">{stars} Stars</span>
-        </div>
+          {/* Quick Star Garden link */}
+          <button
+            className="rq-icon-link-btn"
+            onClick={() => navigate('/readquest/progress')}
+            title="Star Garden & Badges"
+          >
+            <span>🌱</span>
+          </button>
 
-        <button
-          className={`rq-icon-btn ${soundEnabled ? 'active' : ''}`}
-          onClick={toggleSound}
-          title={soundEnabled ? 'Mute audio' : 'Unmute audio'}
-        >
-          {soundEnabled ? '🔊' : '🔇'}
-        </button>
-
-        <button className="rq-icon-btn" onClick={() => navigate('/home')} title="Return to Portal">
-          🏠
-        </button>
-
-        <div className="rq-user-avatar" onClick={() => navigate('/readquest/progress')} title="My Profile & Progress">
-          <span className="rq-avatar-emoji">🦁</span>
-          <div className="rq-user-text">
-            <span className="rq-user-name">Leo Explorer</span>
-            <span className="rq-user-lvl">Level 4 Reader</span>
+          {/* Golden Star Circle Badge (matching reference top-right circle) */}
+          <div
+            className="rq-golden-star-badge"
+            onClick={() => navigate('/readquest/progress')}
+            title="Total Stars Collected"
+          >
+            <span className="star-icon">⭐</span>
+            <span className="star-number">{stars}</span>
           </div>
         </div>
-      </div>
-    </header>
+      </header>
+
+      {/* Parent & Teacher View Modal */}
+      <ParentViewModal
+        isOpen={showParentModal}
+        onClose={() => setShowParentModal(false)}
+        passageTitle={missionTitle}
+      />
+    </>
   )
 }
