@@ -169,13 +169,29 @@ async def generate_plan(
     # Safely parse grade
     grade = str(data.grade).strip() if data.grade is not None else "4"
 
-    # Check database for student's score if not passed
+    # Check database for student's score and completed stages if not passed
+    completed_stages = []
     if target_email:
         parent = await db["parents"].find_one({"parent_email": target_email})
-        if parent:
-            grade = str(parent.get("grade", grade))
-            if user_score is None and "skill_scores" in parent and isinstance(parent["skill_scores"], dict):
-                user_score = float(parent["skill_scores"].get(target_skill, 40.0))
+        user_doc = parent
+        if not user_doc:
+            user_doc = await db["teachers"].find_one({"email": target_email})
+
+        if user_doc:
+            if parent:
+                grade = str(parent.get("grade", grade))
+                if user_score is None and "skill_scores" in parent and isinstance(parent["skill_scores"], dict):
+                    user_score = float(parent["skill_scores"].get(target_skill, 40.0))
+
+            for ex in user_doc.get("completed_exercises", []):
+                cat = str(ex.get("skill_category", "")).lower()
+                ex_id = str(ex.get("id", "")).lower()
+                title = str(ex.get("title", "")).lower()
+                if target_skill in cat or f"map-{target_skill}" in ex_id or target_skill in title:
+                    for s_num in [1, 2, 3]:
+                        if f"stage {s_num}" in title or f"stage-{s_num}" in ex_id or f"-{s_num}-" in ex_id:
+                            if s_num not in completed_stages:
+                                completed_stages.append(s_num)
 
     if user_score is None:
         user_score = 40.0
@@ -187,6 +203,19 @@ async def generate_plan(
         previous_score=prev_score,
         grade=grade
     )
+
+    plan_output["completed_stages"] = completed_stages
+    for stage in plan_output.get("stages", []):
+        s_num = stage.get("stage_number")
+        if s_num in completed_stages:
+            stage["status"] = "Completed"
+            stage["locked"] = False
+        elif s_num == 1 or (s_num - 1) in completed_stages:
+            stage["status"] = "Ready"
+            stage["locked"] = False
+        else:
+            stage["status"] = "Locked"
+            stage["locked"] = True
 
     return plan_output
 

@@ -18,6 +18,269 @@ const ALPHABET_LIST = [
   'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'
 ]
 
+interface LetterStroke {
+  step: number
+  instruction: string
+  icon: string
+  color: string
+}
+
+interface LetterMeta {
+  word: string
+  emoji: string
+  phonics: string
+  strokes: LetterStroke[]
+}
+
+const ALPHABET_DATA: Record<string, LetterMeta> = {
+  A: {
+    word: 'Apple',
+    emoji: '🍎',
+    phonics: '/æ/ as in Apple 🍎',
+    strokes: [
+      { step: 1, instruction: 'Left slant stroke from top', icon: 'arrow_downward', color: '#3b82f6' },
+      { step: 2, instruction: 'Right slant stroke from top', icon: 'arrow_downward', color: '#f97316' },
+      { step: 3, instruction: 'Cross bar at midline', icon: 'horizontal_rule', color: '#eab308' },
+    ],
+  },
+  B: {
+    word: 'Bear',
+    emoji: '🐻',
+    phonics: '/b/ as in Bear 🐻',
+    strokes: [
+      { step: 1, instruction: 'Straight line down', icon: 'arrow_downward', color: '#3b82f6' },
+      { step: 2, instruction: 'Top rounded loop', icon: 'turn_right', color: '#ea580c' },
+      { step: 3, instruction: 'Bottom rounded loop', icon: 'turn_right', color: '#eab308' },
+    ],
+  },
+  C: {
+    word: 'Cat',
+    emoji: '🐱',
+    phonics: '/k/ as in Cat 🐱',
+    strokes: [
+      { step: 1, instruction: 'Curve around from top to bottom', icon: 'rotate_left', color: '#3b82f6' },
+    ],
+  },
+  D: {
+    word: 'Dog',
+    emoji: '🐶',
+    phonics: '/d/ as in Dog 🐶',
+    strokes: [
+      { step: 1, instruction: 'Straight line down', icon: 'arrow_downward', color: '#3b82f6' },
+      { step: 2, instruction: 'Big curve from top to bottom', icon: 'turn_right', color: '#ea580c' },
+    ],
+  },
+  E: {
+    word: 'Elephant',
+    emoji: '🐘',
+    phonics: '/e/ as in Elephant 🐘',
+    strokes: [
+      { step: 1, instruction: 'Straight line down', icon: 'arrow_downward', color: '#3b82f6' },
+      { step: 2, instruction: 'Top line across', icon: 'horizontal_rule', color: '#f97316' },
+      { step: 3, instruction: 'Middle line across', icon: 'horizontal_rule', color: '#eab308' },
+      { step: 4, instruction: 'Bottom line across', icon: 'horizontal_rule', color: '#16a34a' },
+    ],
+  },
+  F: {
+    word: 'Fish',
+    emoji: '🐟',
+    phonics: '/f/ as in Fish 🐟',
+    strokes: [
+      { step: 1, instruction: 'Straight line down', icon: 'arrow_downward', color: '#3b82f6' },
+      { step: 2, instruction: 'Top line across', icon: 'horizontal_rule', color: '#f97316' },
+      { step: 3, instruction: 'Middle line across', icon: 'horizontal_rule', color: '#eab308' },
+    ],
+  },
+  G: {
+    word: 'Giraffe',
+    emoji: '🦒',
+    phonics: '/g/ as in Giraffe 🦒',
+    strokes: [
+      { step: 1, instruction: 'Curve around like C', icon: 'rotate_left', color: '#3b82f6' },
+      { step: 2, instruction: 'Inward horizontal bar', icon: 'horizontal_rule', color: '#ea580c' },
+    ],
+  },
+  H: {
+    word: 'Hat',
+    emoji: '🎩',
+    phonics: '/h/ as in Hat 🎩',
+    strokes: [
+      { step: 1, instruction: 'Left line down', icon: 'arrow_downward', color: '#3b82f6' },
+      { step: 2, instruction: 'Right line down', icon: 'arrow_downward', color: '#f97316' },
+      { step: 3, instruction: 'Middle bar across', icon: 'horizontal_rule', color: '#eab308' },
+    ],
+  },
+  I: {
+    word: 'Igloo',
+    emoji: '❄️',
+    phonics: '/ɪ/ as in Igloo ❄️',
+    strokes: [
+      { step: 1, instruction: 'Vertical line down', icon: 'arrow_downward', color: '#3b82f6' },
+      { step: 2, instruction: 'Top bar across', icon: 'horizontal_rule', color: '#f97316' },
+      { step: 3, instruction: 'Bottom bar across', icon: 'horizontal_rule', color: '#eab308' },
+    ],
+  },
+  J: {
+    word: 'Jellyfish',
+    emoji: '🪼',
+    phonics: '/dʒ/ as in Jellyfish 🪼',
+    strokes: [
+      { step: 1, instruction: 'Straight down and hook left', icon: 'turn_left', color: '#3b82f6' },
+      { step: 2, instruction: 'Top bar across', icon: 'horizontal_rule', color: '#f97316' },
+    ],
+  },
+  K: {
+    word: 'Kangaroo',
+    emoji: '🦘',
+    phonics: '/k/ as in Kangaroo 🦘',
+    strokes: [
+      { step: 1, instruction: 'Straight line down', icon: 'arrow_downward', color: '#3b82f6' },
+      { step: 2, instruction: 'Slant in to center', icon: 'south_west', color: '#f97316' },
+      { step: 3, instruction: 'Slant out to base', icon: 'south_east', color: '#eab308' },
+    ],
+  },
+  L: {
+    word: 'Lion',
+    emoji: '🦁',
+    phonics: '/l/ as in Lion 🦁',
+    strokes: [
+      { step: 1, instruction: 'Straight line down', icon: 'arrow_downward', color: '#3b82f6' },
+      { step: 2, instruction: 'Line across along base', icon: 'horizontal_rule', color: '#f97316' },
+    ],
+  },
+  M: {
+    word: 'Monkey',
+    emoji: '🐵',
+    phonics: '/m/ as in Monkey 🐵',
+    strokes: [
+      { step: 1, instruction: 'Line down on left', icon: 'arrow_downward', color: '#3b82f6' },
+      { step: 2, instruction: 'Slant down to center', icon: 'south_east', color: '#f97316' },
+      { step: 3, instruction: 'Slant up to top right', icon: 'north_east', color: '#eab308' },
+      { step: 4, instruction: 'Line down on right', icon: 'arrow_downward', color: '#16a34a' },
+    ],
+  },
+  N: {
+    word: 'Nest',
+    emoji: '🪺',
+    phonics: '/n/ as in Nest 🪺',
+    strokes: [
+      { step: 1, instruction: 'Line down on left', icon: 'arrow_downward', color: '#3b82f6' },
+      { step: 2, instruction: 'Slant down across', icon: 'south_east', color: '#f97316' },
+      { step: 3, instruction: 'Line down on right', icon: 'arrow_downward', color: '#eab308' },
+    ],
+  },
+  O: {
+    word: 'Owl',
+    emoji: '🦉',
+    phonics: '/ɒ/ as in Owl 🦉',
+    strokes: [
+      { step: 1, instruction: 'Circle curve all the way around', icon: 'rotate_left', color: '#3b82f6' },
+    ],
+  },
+  P: {
+    word: 'Panda',
+    emoji: '🐼',
+    phonics: '/p/ as in Panda 🐼',
+    strokes: [
+      { step: 1, instruction: 'Straight line down', icon: 'arrow_downward', color: '#3b82f6' },
+      { step: 2, instruction: 'Top loop curve', icon: 'turn_right', color: '#f97316' },
+    ],
+  },
+  Q: {
+    word: 'Queen',
+    emoji: '👑',
+    phonics: '/kw/ as in Queen 👑',
+    strokes: [
+      { step: 1, instruction: 'Circle curve around', icon: 'rotate_left', color: '#3b82f6' },
+      { step: 2, instruction: 'Small tail slash', icon: 'south_east', color: '#f97316' },
+    ],
+  },
+  R: {
+    word: 'Rabbit',
+    emoji: '🐰',
+    phonics: '/r/ as in Rabbit 🐰',
+    strokes: [
+      { step: 1, instruction: 'Straight line down', icon: 'arrow_downward', color: '#3b82f6' },
+      { step: 2, instruction: 'Top loop curve', icon: 'turn_right', color: '#f97316' },
+      { step: 3, instruction: 'Leg slant down right', icon: 'south_east', color: '#eab308' },
+    ],
+  },
+  S: {
+    word: 'Star',
+    emoji: '⭐',
+    phonics: '/s/ as in Star ⭐',
+    strokes: [
+      { step: 1, instruction: 'Curve left, then curve right', icon: 'gesture', color: '#3b82f6' },
+    ],
+  },
+  T: {
+    word: 'Tiger',
+    emoji: '🐯',
+    phonics: '/t/ as in Tiger 🐯',
+    strokes: [
+      { step: 1, instruction: 'Center line straight down', icon: 'arrow_downward', color: '#3b82f6' },
+      { step: 2, instruction: 'Top hat bar across', icon: 'horizontal_rule', color: '#f97316' },
+    ],
+  },
+  U: {
+    word: 'Umbrella',
+    emoji: '☂️',
+    phonics: '/ʌ/ as in Umbrella ☂️',
+    strokes: [
+      { step: 1, instruction: 'Down, curve around base, up', icon: 'u_turn_right', color: '#3b82f6' },
+    ],
+  },
+  V: {
+    word: 'Violin',
+    emoji: '🎻',
+    phonics: '/v/ as in Violin 🎻',
+    strokes: [
+      { step: 1, instruction: 'Slant down to point', icon: 'south_east', color: '#3b82f6' },
+      { step: 2, instruction: 'Slant up to right', icon: 'north_east', color: '#f97316' },
+    ],
+  },
+  W: {
+    word: 'Whale',
+    emoji: '🐋',
+    phonics: '/w/ as in Whale 🐋',
+    strokes: [
+      { step: 1, instruction: 'Slant down left', icon: 'south_east', color: '#3b82f6' },
+      { step: 2, instruction: 'Slant up middle', icon: 'north_east', color: '#f97316' },
+      { step: 3, instruction: 'Slant down right', icon: 'south_east', color: '#eab308' },
+      { step: 4, instruction: 'Slant up right', icon: 'north_east', color: '#16a34a' },
+    ],
+  },
+  X: {
+    word: 'Xylophone',
+    emoji: '🎶',
+    phonics: '/ks/ as in Xylophone 🎶',
+    strokes: [
+      { step: 1, instruction: 'Slant across top left to bottom right', icon: 'south_east', color: '#3b82f6' },
+      { step: 2, instruction: 'Slant across top right to bottom left', icon: 'south_west', color: '#f97316' },
+    ],
+  },
+  Y: {
+    word: 'Yak',
+    emoji: '🐂',
+    phonics: '/j/ as in Yak 🐂',
+    strokes: [
+      { step: 1, instruction: 'Short slant left to center', icon: 'south_east', color: '#3b82f6' },
+      { step: 2, instruction: 'Short slant right to center', icon: 'south_west', color: '#f97316' },
+      { step: 3, instruction: 'Vertical stem straight down', icon: 'arrow_downward', color: '#eab308' },
+    ],
+  },
+  Z: {
+    word: 'Zebra',
+    emoji: '🦓',
+    phonics: '/z/ as in Zebra 🦓',
+    strokes: [
+      { step: 1, instruction: 'Top line across', icon: 'horizontal_rule', color: '#3b82f6' },
+      { step: 2, instruction: 'Slant down across', icon: 'south_west', color: '#f97316' },
+      { step: 3, instruction: 'Bottom line across', icon: 'horizontal_rule', color: '#eab308' },
+    ],
+  },
+}
+
 
 const DEFAULT_SKILLS: SkillItem[] = [
   {
@@ -95,16 +358,21 @@ export default function PersonalPlan() {
   const [isDrawing, setIsDrawing] = useState<boolean>(false)
   const [strokePointsCount, setStrokePointsCount] = useState<number>(0)
   const [penColor, setPenColor] = useState<string>('#0058be')
-  const [activeWritingLetter, setActiveWritingLetter] = useState<string>('B')
+  const [activeWritingLetter, setActiveWritingLetter] = useState<string>('A')
+  const [completedWritingLetters, setCompletedWritingLetters] = useState<string[]>([])
   const [writingFeedback, setWritingFeedback] = useState<string>('Great! Keep practicing!')
 
   // Reset or initialize writing studio canvas when game stage opens
   useEffect(() => {
     if (activeGameStage) {
-      const initialLetter = activeGameStage.task_data?.letter || 'B'
+      const lettersList: string[] = activeGameStage.task_data?.letters_set || ALPHABET_LIST
+      const initialLetter = activeGameStage.task_data?.letter || lettersList[0] || 'A'
       setActiveWritingLetter(initialLetter)
+      setCompletedWritingLetters([])
       setStrokePointsCount(0)
-      setWritingFeedback('Great! Keep practicing!')
+      const meta = ALPHABET_DATA[initialLetter]
+      const wordDesc = meta ? ` as in ${meta.word} ${meta.emoji}` : ''
+      setWritingFeedback(`Let's begin Letter Quest! Trace '${initialLetter}'${wordDesc} to start ✏️`)
       setTimeout(() => {
         const canvas = canvasRef.current
         if (canvas) {
@@ -189,49 +457,132 @@ export default function PersonalPlan() {
   const handleSwitchLetter = (letter: string) => {
     setActiveWritingLetter(letter)
     setStrokePointsCount(0)
-    setWritingFeedback(`Practicing letter ${letter}! Trace it on the canvas ✏️`)
     clearCanvas()
-    handleSpeakText(`Letter ${letter}! Let's trace letter ${letter}!`)
+    const isDone = completedWritingLetters.includes(letter)
+    const lettersList: string[] = activeGameStage?.task_data?.letters_set || ALPHABET_LIST
+    const totalRequired = activeGameStage?.task_data?.total_letters || lettersList.length || 26
+    const letterMeta = ALPHABET_DATA[letter]
+    const wordExample = letterMeta ? `${letterMeta.word} ${letterMeta.emoji}` : letter
+
+    if (isDone) {
+      setWritingFeedback(
+        `Letter '${letter}' is already completed (✓)! You can practice again ✏️ (${completedWritingLetters.length}/${totalRequired} done)`
+      )
+    } else {
+      setWritingFeedback(
+        `Tracing Letter '${letter}' as in ${wordExample}! (${completedWritingLetters.length}/${totalRequired} completed)`
+      )
+    }
+
+    const soundPrompt = letterMeta?.phonics || `Letter ${letter}! Let's trace letter ${letter}!`
+    handleSpeakText(soundPrompt)
+  }
+
+  const handleNextLetter = () => {
+    const lettersList: string[] = activeGameStage?.task_data?.letters_set || ALPHABET_LIST
+    const curIndex = lettersList.indexOf(activeWritingLetter)
+    const nextIdx = (curIndex + 1) % lettersList.length
+    handleSwitchLetter(lettersList[nextIdx])
+  }
+
+  const handlePrevLetter = () => {
+    const lettersList: string[] = activeGameStage?.task_data?.letters_set || ALPHABET_LIST
+    const curIndex = lettersList.indexOf(activeWritingLetter)
+    const prevIdx = (curIndex - 1 + lettersList.length) % lettersList.length
+    handleSwitchLetter(lettersList[prevIdx])
+  }
+
+  // Teacher / Examiner demonstration helper to fast-fill 25 letters
+  const handleDemoFillLetters = () => {
+    const lettersList: string[] = activeGameStage?.task_data?.letters_set || ALPHABET_LIST
+    const allExceptLast = lettersList.slice(0, lettersList.length - 1)
+    const lastLetter = lettersList[lettersList.length - 1]
+    setCompletedWritingLetters(allExceptLast)
+    setActiveWritingLetter(lastLetter)
+    clearCanvas()
+    setWritingFeedback(
+      `⚡ Demo Mode: 25 of 26 letters marked complete! Trace '${lastLetter}' to finish Stage 1! ✏️`
+    )
+    handleSpeakText(`Demo mode activated! Complete letter ${lastLetter} to finish Stage 1!`)
   }
 
   const handleCheckWriting = async () => {
     if (strokePointsCount < 8) {
-      setWritingFeedback('✏️ Trace the letter on the canvas above first!')
-      handleSpeakText('Trace the letter first with your finger or mouse!')
+      setWritingFeedback(`✏️ Trace letter '${activeWritingLetter}' on the canvas first!`)
+      handleSpeakText(`Trace letter ${activeWritingLetter} first with your finger or mouse!`)
       return
     }
 
-    setWritingFeedback('🌟 Excellent! Letter traced with great accuracy! +10 Stars!')
-    handleSpeakText(
-      `Great handwriting! You conquered letter ${activeWritingLetter}! Stage completed!`
-    )
+    const lettersList: string[] = activeGameStage?.task_data?.letters_set || ALPHABET_LIST
+    const totalRequired = activeGameStage?.task_data?.total_letters || lettersList.length || 26
 
-    if (activeGameStage) {
-      try {
-        await completeStageApi(
-          selectedSkill?.id || 'writing',
-          activeGameStage.stage_number,
-          activeGameStage.title,
-          100,
-          activeGameStage.xp_reward,
-          hintsUsedCount,
-          attemptsCount,
-          currentUser?.email
-        )
-      } catch (e) {
-        console.warn('Stage save warning:', e)
+    // Add current letter to completed list if not already there
+    const isAlreadyDone = completedWritingLetters.includes(activeWritingLetter)
+    const updatedCompleted = isAlreadyDone
+      ? completedWritingLetters
+      : [...completedWritingLetters, activeWritingLetter]
+
+    setCompletedWritingLetters(updatedCompleted)
+
+    const isAllComplete = updatedCompleted.length >= totalRequired
+
+    if (!isAllComplete) {
+      // Find the next letter to trace
+      const currentIndex = lettersList.indexOf(activeWritingLetter)
+      // Look for next letter in order, or next uncompleted letter
+      const nextLetter =
+        lettersList.find((l, idx) => idx > currentIndex && !updatedCompleted.includes(l)) ||
+        lettersList.find((l) => !updatedCompleted.includes(l)) ||
+        lettersList[(currentIndex + 1) % lettersList.length]
+
+      const nextMeta = ALPHABET_DATA[nextLetter]
+      const nextWord = nextMeta ? `${nextMeta.word} ${nextMeta.emoji}` : nextLetter
+
+      setWritingFeedback(
+        `🌟 Superb! Letter '${activeWritingLetter}' completed! (${updatedCompleted.length}/${totalRequired}) Next: Letter '${nextLetter}' as in ${nextWord}! ✏️`
+      )
+      handleSpeakText(
+        `Great handwriting! You conquered letter ${activeWritingLetter}! Now let's trace letter ${nextLetter}!`
+      )
+
+      clearCanvas()
+      setActiveWritingLetter(nextLetter)
+    } else {
+      // All 26 letters (or all required items) completed!
+      setWritingFeedback(
+        `🏆 Incredible! You conquered all ${totalRequired} letters from A to Z! Stage ${activeGameStage?.stage_number} Completed! +${activeGameStage?.xp_reward || 50} Stars! 🌟`
+      )
+      handleSpeakText(
+        `Incredible work! You have conquered all 26 letters from A to Z! Stage completed!`
+      )
+
+      if (activeGameStage) {
+        try {
+          await completeStageApi(
+            selectedSkill?.id || 'writing',
+            activeGameStage.stage_number,
+            activeGameStage.title,
+            100,
+            activeGameStage.xp_reward,
+            hintsUsedCount,
+            attemptsCount,
+            currentUser?.email
+          )
+        } catch (e) {
+          console.warn('Stage save warning:', e)
+        }
+
+        setStagesProgress((prev) => ({
+          ...prev,
+          [activeGameStage.stage_number]: true,
+        }))
+
+        setTimeout(() => {
+          setLastCompletedStage(activeGameStage)
+          setActiveGameStage(null)
+          setShowCelebration(true)
+        }, 1200)
       }
-
-      setStagesProgress((prev) => ({
-        ...prev,
-        [activeGameStage.stage_number]: true,
-      }))
-
-      setTimeout(() => {
-        setLastCompletedStage(activeGameStage)
-        setActiveGameStage(null)
-        setShowCelebration(true)
-      }, 850)
     }
   }
 
@@ -755,7 +1106,7 @@ export default function PersonalPlan() {
                 Letter Quest — Practice '{activeWritingLetter}'
               </h1>
               <div className="letter-quest-stars-pill">
-                <span>120</span>
+                <span>{completedWritingLetters.length * 10}</span>
                 <span className="material-symbols-outlined" style={{ color: '#eab308' }}>
                   stars
                 </span>
@@ -766,10 +1117,14 @@ export default function PersonalPlan() {
             <main className="letter-quest-main">
               {/* Progress Bar */}
               <div className="letter-quest-progress-wrap">
-                <span className="letter-quest-progress-tag">
-                  Letter {Math.max(1, ALPHABET_LIST.indexOf(activeWritingLetter) + 1)} of{' '}
-                  {activeGameStage.task_data?.total_letters || 26}
-                </span>
+                <div className="letter-quest-progress-meta-row">
+                  <span className="letter-quest-progress-tag">
+                    ✏️ Tracing: <strong>Letter '{activeWritingLetter}'</strong> ({(activeGameStage.task_data?.letters_set || ALPHABET_LIST).indexOf(activeWritingLetter) + 1} of {activeGameStage.task_data?.total_letters || 26})
+                  </span>
+                  <span className="letter-quest-progress-tag tag-score">
+                    ⭐ Progress: <strong>{completedWritingLetters.length} / {activeGameStage.task_data?.total_letters || 26}</strong> Completed
+                  </span>
+                </div>
                 <div className="letter-quest-progress-track">
                   <div
                     className="letter-quest-progress-fill"
@@ -777,7 +1132,7 @@ export default function PersonalPlan() {
                       width: `${Math.min(
                         100,
                         Math.round(
-                          ((Math.max(1, ALPHABET_LIST.indexOf(activeWritingLetter) + 1)) /
+                          (completedWritingLetters.length /
                             (activeGameStage.task_data?.total_letters || 26)) *
                           100
                         )
@@ -798,154 +1153,200 @@ export default function PersonalPlan() {
                 <div className="caire-speech-content">
                   <strong>🤖 CAIRE says:</strong>
                   <p>
-                    {selectedSkill?.current_score !== undefined && selectedSkill.current_score < 45
-                      ? "Writing score < 45 detected: We're starting with letter stroke fundamentals before words! Trace smoothly along the lines."
-                      : "Let's practice your writing skills! Trace each stroke smoothly along the handwriting lines."}
+                    {completedWritingLetters.length === 0
+                      ? "Welcome to Letter Quest! Write letters from A to Z. Complete all 26 letters to unlock Stage 2!"
+                      : completedWritingLetters.length === (activeGameStage.task_data?.total_letters || 26) - 1
+                      ? `Final stretch! Just 1 letter left to complete all 26 letters! Trace '${activeWritingLetter}' carefully!`
+                      : `Super effort! You've completed ${completedWritingLetters.length} of ${activeGameStage.task_data?.total_letters || 26} letters! Keep going with '${activeWritingLetter}'!`}
                   </p>
                 </div>
               </div>
 
               {/* Main Bento Grid Layout */}
               <div className="letter-quest-bento-grid">
-                {/* Left Column: Letter Display & Sound Card */}
-                <div className="letter-quest-left-card">
-                  {/* Floating 3D Stickers */}
-                  <div className="floating-sticker sticker-1">⭐</div>
-                  <div className="floating-sticker sticker-2">✏️</div>
-                  <div className="floating-sticker sticker-3">🎨</div>
+                {(() => {
+                  const lettersList = activeGameStage.task_data?.letters_set || ALPHABET_LIST
+                  const totalRequired = activeGameStage.task_data?.total_letters || lettersList.length || 26
+                  const currentMeta = ALPHABET_DATA[activeWritingLetter] || {
+                    word: activeWritingLetter,
+                    emoji: '✏️',
+                    phonics: activeGameStage.task_data?.phonics_sound || `Practice writing '${activeWritingLetter}'`,
+                    strokes: activeGameStage.task_data?.stroke_steps || [
+                      { step: 1, instruction: 'Write clearly on the line', icon: 'draw', color: '#2563eb' },
+                    ],
+                  }
 
-                  <button
-                    className="btn-letter-sound"
-                    onClick={() =>
-                      handleSpeakText(
-                        activeGameStage.task_data?.phonics_sound ||
-                        `${activeWritingLetter} says /${activeWritingLetter.toLowerCase()}/. Listen and trace!`
-                      )
-                    }
-                    title="Listen to Phonics Sound"
-                  >
-                    <span className="material-symbols-outlined">volume_up</span>
-                  </button>
+                  return (
+                    <>
+                      {/* Left Column: Letter Display & Sound Card */}
+                      <div className="letter-quest-left-card">
+                        {/* Floating 3D Stickers */}
+                        <div className="floating-sticker sticker-1">⭐</div>
+                        <div className="floating-sticker sticker-2">✏️</div>
+                        <div className="floating-sticker sticker-3">🎨</div>
 
-                  <div className="giant-letter-display">
-                    <span>{activeWritingLetter}</span>
-                    <span className="lower">{activeWritingLetter.toLowerCase()}</span>
-                  </div>
-
-                  <div className="letter-phonics-label">
-                    {activeGameStage.task_data?.phonics_sound ||
-                      `/${activeWritingLetter.toLowerCase()}/ as in Bear 🐻`}
-                  </div>
-
-                  {/* Quick A-Z Letter Selector Bar */}
-                  <div className="letter-quick-strip">
-                    <span className="letter-strip-title">Alphabet Quick Pick (A–Z)</span>
-                    <div className="letter-strip-scroll">
-                      {(activeGameStage.task_data?.letters_set || ALPHABET_LIST).map((ltr: string) => (
                         <button
-                          key={ltr}
-                          className={`letter-strip-btn ${activeWritingLetter === ltr ? 'active' : ''}`}
-                          onClick={() => handleSwitchLetter(ltr)}
+                          className="btn-letter-sound"
+                          onClick={() =>
+                            handleSpeakText(
+                              currentMeta.phonics ||
+                              `${activeWritingLetter} says /${activeWritingLetter.toLowerCase()}/. Listen and trace!`
+                            )
+                          }
+                          title="Listen to Phonics Sound"
                         >
-                          {ltr}
+                          <span className="material-symbols-outlined">volume_up</span>
                         </button>
-                      ))}
-                    </div>
-                  </div>
-                </div>
 
-                {/* Right Column: Handwriting Ruled Tracing Canvas */}
-                <div className="letter-quest-right-card">
-                  {/* Guide/Instructions Header */}
-                  <div className="handwriting-header">
-                    <p className="handwriting-instruction-pill">
-                      <span className="material-symbols-outlined" style={{ color: '#16a34a' }}>
-                        draw
-                      </span>
-                      <span>Trace the letter with your finger or mouse ✏️</span>
-                    </p>
+                        <div className="giant-letter-display">
+                          <span>{activeWritingLetter}</span>
+                          <span className="lower">{activeWritingLetter.toLowerCase()}</span>
+                        </div>
 
-                    {/* Stroke Guide Mini */}
-                    <div className="stroke-guide-mini">
-                      <div className="stroke-step-item">
-                        <span className="stroke-step-num" style={{ color: '#2563eb' }}>1</span>
-                        <span className="material-symbols-outlined" style={{ fontSize: '15px', color: '#2563eb' }}>
-                          arrow_downward
-                        </span>
+                        <div className="letter-phonics-label">
+                          {currentMeta.phonics ||
+                            `/${activeWritingLetter.toLowerCase()}/ as in Bear 🐻`}
+                        </div>
+
+                        {/* Quick A-Z Letter Selector Bar */}
+                        <div className="letter-quick-strip">
+                          <div className="letter-strip-header-row">
+                            <span className="letter-strip-title">Alphabet Quick Pick (A–Z)</span>
+                            <span className="letter-strip-count-badge">
+                              {completedWritingLetters.length} / {totalRequired} Done
+                            </span>
+                          </div>
+                          <div className="letter-strip-scroll">
+                            {lettersList.map((ltr: string) => {
+                              const isDone = completedWritingLetters.includes(ltr)
+                              const isActive = activeWritingLetter === ltr
+                              return (
+                                <button
+                                  key={ltr}
+                                  className={`letter-strip-btn ${isActive ? 'active' : ''} ${isDone ? 'completed' : ''}`}
+                                  onClick={() => handleSwitchLetter(ltr)}
+                                  title={isDone ? `Letter ${ltr} (Completed ✓)` : `Letter ${ltr}`}
+                                >
+                                  <span>{ltr}</span>
+                                  {isDone && <span className="letter-done-indicator">✓</span>}
+                                </button>
+                              )
+                            })}
+                          </div>
+                        </div>
                       </div>
-                      <div className="stroke-step-item">
-                        <span className="stroke-step-num" style={{ color: '#ea580c' }}>2</span>
-                        <span
-                          className="material-symbols-outlined"
-                          style={{ fontSize: '15px', color: '#ea580c', transform: 'rotate(90deg)' }}
-                        >
-                          turn_right
-                        </span>
+
+                      {/* Right Column: Handwriting Ruled Tracing Canvas */}
+                      <div className="letter-quest-right-card">
+                        {/* Guide/Instructions Header with Navigation Arrows */}
+                        <div className="handwriting-header">
+                          <div className="handwriting-nav-controls">
+                            <button
+                              className="btn-letter-nav-arrow"
+                              onClick={handlePrevLetter}
+                              title="Previous letter"
+                            >
+                              <span className="material-symbols-outlined">chevron_left</span>
+                            </button>
+                            <p className="handwriting-instruction-pill">
+                              <span className="material-symbols-outlined" style={{ color: '#16a34a' }}>
+                                draw
+                              </span>
+                              <span>Trace letter '{activeWritingLetter}' along the guide lines ✏️</span>
+                            </p>
+                            <button
+                              className="btn-letter-nav-arrow"
+                              onClick={handleNextLetter}
+                              title="Next letter"
+                            >
+                              <span className="material-symbols-outlined">chevron_right</span>
+                            </button>
+                          </div>
+
+                          {/* Stroke Guide Mini */}
+                          <div className="stroke-guide-mini" title="Recommended Stroke Steps">
+                            {(currentMeta.strokes || [
+                              { step: 1, instruction: 'Trace stroke', icon: 'arrow_downward', color: '#2563eb' },
+                            ]).map((st) => (
+                              <div className="stroke-step-item" key={st.step}>
+                                <span className="stroke-step-num" style={{ color: st.color }}>{st.step}</span>
+                                <span className="material-symbols-outlined" style={{ fontSize: '15px', color: st.color }}>
+                                  {st.icon}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Interactive Ruled Handwriting Canvas Box */}
+                        <div className="handwriting-canvas-card">
+                          <div className="handwriting-lines-bg" />
+                          <div className="dashed-midline-rule" />
+                          <div
+                            className="faint-letter-guide"
+                            style={{ fontSize: activeWritingLetter.length > 2 ? '90px' : undefined }}
+                          >
+                            {activeWritingLetter}
+                          </div>
+                          <canvas
+                            ref={canvasRef}
+                            width={800}
+                            height={420}
+                            className="tracing-canvas"
+                            onMouseDown={startDrawing}
+                            onMouseMove={draw}
+                            onMouseUp={stopDrawing}
+                            onMouseLeave={stopDrawing}
+                            onTouchStart={startDrawing}
+                            onTouchMove={draw}
+                            onTouchEnd={stopDrawing}
+                          />
+                        </div>
+
+                        {/* Canvas Toolbar */}
+                        <div className="canvas-tools-bar">
+                          <div className="pen-colors-row">
+                            <span style={{ fontSize: '12.5px', fontWeight: 800, color: '#64748b' }}>
+                              Ink:
+                            </span>
+                            {[
+                              { color: '#0058be', name: 'Blue' },
+                              { color: '#16a34a', name: 'Green' },
+                              { color: '#9333ea', name: 'Purple' },
+                              { color: '#ea580c', name: 'Orange' },
+                            ].map((c) => (
+                              <button
+                                key={c.color}
+                                className={`pen-color-dot ${penColor === c.color ? 'selected' : ''}`}
+                                style={{ backgroundColor: c.color }}
+                                onClick={() => setPenColor(c.color)}
+                                title={c.name}
+                              />
+                            ))}
+                          </div>
+
+                          <div className="canvas-actions-row">
+                            <button
+                              className="btn-demo-fill"
+                              onClick={handleDemoFillLetters}
+                              title="Fast Test: Mark 25 letters complete to test completing Z"
+                            >
+                              <span className="material-symbols-outlined" style={{ fontSize: '15px' }}>bolt</span>
+                              <span>Demo Fill (25/26)</span>
+                            </button>
+
+                            <button className="btn-clear-canvas" onClick={clearCanvas}>
+                              <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>
+                                refresh
+                              </span>
+                              <span>Clear &amp; Retry</span>
+                            </button>
+                          </div>
+                        </div>
                       </div>
-                      <div className="stroke-step-item">
-                        <span className="stroke-step-num" style={{ color: '#eab308' }}>3</span>
-                        <span
-                          className="material-symbols-outlined"
-                          style={{ fontSize: '15px', color: '#eab308', transform: 'rotate(90deg)' }}
-                        >
-                          turn_right
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Interactive Ruled Handwriting Canvas Box */}
-                  <div className="handwriting-canvas-card">
-                    <div className="handwriting-lines-bg" />
-                    <div className="dashed-midline-rule" />
-                    <div className="faint-letter-guide">
-                      {activeWritingLetter}
-                    </div>
-                    <canvas
-                      ref={canvasRef}
-                      width={800}
-                      height={420}
-                      className="tracing-canvas"
-                      onMouseDown={startDrawing}
-                      onMouseMove={draw}
-                      onMouseUp={stopDrawing}
-                      onMouseLeave={stopDrawing}
-                      onTouchStart={startDrawing}
-                      onTouchMove={draw}
-                      onTouchEnd={stopDrawing}
-                    />
-                  </div>
-
-                  {/* Canvas Toolbar */}
-                  <div className="canvas-tools-bar">
-                    <div className="pen-colors-row">
-                      <span style={{ fontSize: '12.5px', fontWeight: 800, color: '#64748b' }}>
-                        Ink:
-                      </span>
-                      {[
-                        { color: '#0058be', name: 'Blue' },
-                        { color: '#16a34a', name: 'Green' },
-                        { color: '#9333ea', name: 'Purple' },
-                        { color: '#ea580c', name: 'Orange' },
-                      ].map((c) => (
-                        <button
-                          key={c.color}
-                          className={`pen-color-dot ${penColor === c.color ? 'selected' : ''}`}
-                          style={{ backgroundColor: c.color }}
-                          onClick={() => setPenColor(c.color)}
-                          title={c.name}
-                        />
-                      ))}
-                    </div>
-
-                    <button className="btn-clear-canvas" onClick={clearCanvas}>
-                      <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>
-                        refresh
-                      </span>
-                      <span>Clear &amp; Retry</span>
-                    </button>
-                  </div>
-                </div>
+                    </>
+                  )
+                })()}
               </div>
 
               {/* Bottom Action Area */}
@@ -966,9 +1367,17 @@ export default function PersonalPlan() {
                     className="material-symbols-outlined"
                     style={{ fontVariationSettings: "'FILL' 1" }}
                   >
-                    fact_check
+                    {completedWritingLetters.length === (activeGameStage.task_data?.total_letters || 26) - 1 &&
+                    !completedWritingLetters.includes(activeWritingLetter)
+                      ? 'emoji_events'
+                      : 'fact_check'}
                   </span>
-                  <span>Check My Writing</span>
+                  <span>
+                    {completedWritingLetters.length === (activeGameStage.task_data?.total_letters || 26) - 1 &&
+                    !completedWritingLetters.includes(activeWritingLetter)
+                      ? `Check & Complete Stage (${activeGameStage.task_data?.total_letters || 26}/${activeGameStage.task_data?.total_letters || 26}) 🏆`
+                      : `Check Letter '${activeWritingLetter}' & Next ✏️`}
+                  </span>
                 </button>
               </div>
             </main>

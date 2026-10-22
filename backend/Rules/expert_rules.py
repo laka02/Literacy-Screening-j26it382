@@ -209,33 +209,33 @@ def generate_adaptive_plan(skill_type: str, current_score: float, previous_score
         # Score >= 75: R03, R04, R16, R25 (Challenge word flow, sentence writing)
         if band == "low":
             evaluation["rules_applied"].extend(["R01", "R04", "R08", "R09", "R21", "R22"])
-            stage1_title = "Stage 1: Letter Quest — Practice 'B' (A–Z Tracing)"
+            stage1_title = "Stage 1: Letter Quest — Practice 'A' (A–Z Tracing)"
             stage1_diff = "Foundational (Letter Tracing)"
-            stage1_desc = "Trace capital 'B' and lowercase 'b' along handwriting guide lines with stroke arrows."
+            stage1_desc = "Trace capital and lowercase letters from A to Z along handwriting guide lines with stroke arrows."
             stage1_rules = ["R01", "R04", "R08", "R09", "R21", "R22"]
-            stage1_letter = "B"
-            stage1_lower = "b"
-            stage1_sound = "/b/ as in Bear & Butterfly 🐻"
-            stage1_hint = "Start from the top dot and trace down straight to the bottom! ✏️"
+            stage1_letter = "A"
+            stage1_lower = "a"
+            stage1_sound = "/æ/ as in Apple & Ant 🍎"
+            stage1_hint = "Start from the top dot and trace down straight along the guide lines! ✏️"
         elif band == "medium":
             evaluation["rules_applied"].extend(["R02", "R04", "R08", "R10", "R22"])
-            stage1_title = "Stage 1: Letter Quest — Practice 'B' (Stroke Precision)"
+            stage1_title = "Stage 1: Letter Quest — Practice 'A' (Stroke Precision)"
             stage1_diff = "Guided Practice (Letter Formation)"
-            stage1_desc = "Master the curve radius and straight spine alignment of letter 'B' to avoid reversals."
+            stage1_desc = "Master the curve radius and straight alignment of letters from A to Z."
             stage1_rules = ["R02", "R04", "R08", "R10", "R22"]
-            stage1_letter = "B"
-            stage1_lower = "b"
-            stage1_sound = "/b/ as in Boat & Bird ⛵"
-            stage1_hint = "Make the top loop first, then round out the bottom loop smoothly!"
+            stage1_letter = "A"
+            stage1_lower = "a"
+            stage1_sound = "/æ/ as in Apple & Astronaut 🚀"
+            stage1_hint = "Trace each stroke carefully along the lines without rushing!"
         else:
             evaluation["rules_applied"].extend(["R03", "R04", "R10", "R16"])
             stage1_title = "Stage 1: Letter Quest — Fast & Fluent Tracing"
             stage1_diff = "Proficient (Stroke Agility)"
-            stage1_desc = "Trace clean letterforms with consistent handwriting slant and pencil stamina."
+            stage1_desc = "Trace clean letterforms with consistent handwriting slant for letters A to Z."
             stage1_rules = ["R03", "R04", "R10", "R16"]
-            stage1_letter = "B"
-            stage1_lower = "b"
-            stage1_sound = "/b/ as in Brave & Brilliant ⭐"
+            stage1_letter = "A"
+            stage1_lower = "a"
+            stage1_sound = "/æ/ as in Adventure & Ace ⭐"
             stage1_hint = "Keep a steady, relaxed grip and trace without pausing mid-curve!"
 
         stages = [
@@ -254,21 +254,21 @@ def generate_adaptive_plan(skill_type: str, current_score: float, previous_score
                     "letter": stage1_letter,
                     "letter_lower": stage1_lower,
                     "phonics_sound": stage1_sound,
-                    "word_example": "Bear",
-                    "letter_number": 2,
+                    "word_example": "Apple",
+                    "letter_number": 1,
                     "total_letters": 26,
                     "letters_set": [
                         "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M",
                         "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"
                     ],
                     "stroke_steps": [
-                        {"step": 1, "instruction": "Top-to-bottom straight spine", "icon": "arrow_downward", "color": "#3b82f6"},
-                        {"step": 2, "instruction": "Top curve to midline", "icon": "turn_right", "color": "#f97316"},
-                        {"step": 3, "instruction": "Bottom curve to baseline", "icon": "turn_right", "color": "#eab308"}
+                        {"step": 1, "instruction": "Left slant stroke from top", "icon": "arrow_downward", "color": "#3b82f6"},
+                        {"step": 2, "instruction": "Right slant stroke from top", "icon": "arrow_downward", "color": "#f97316"},
+                        {"step": 3, "instruction": "Horizontal bar across midline", "icon": "horizontal_rule", "color": "#eab308"}
                     ],
                     "hint": stage1_hint,
-                    "question": f"Letter Quest: Practice tracing uppercase '{stage1_letter}' and lowercase '{stage1_lower}'",
-                    "options": ["Trace Letter 'B'", "Listen to Sound /b/", "Clear & Retry"],
+                    "question": f"Letter Quest: Practice tracing uppercase '{stage1_letter}' and lowercase '{stage1_lower}' (Complete all 26 letters A–Z to unlock Stage 2)",
+                    "options": ["Trace Letter 'A'", "Listen to Sound /æ/", "Clear & Retry"],
                     "correct_index": 0
                 }
             },

@@ -87,6 +87,7 @@ export interface AdaptivePlanResponse {
   previous_score?: number
   stages: StageItem[]
   rules_manifest: RuleManifestItem[]
+  completed_stages?: number[]
 }
 
 export const getAvailableSkills = async (email?: string) => {
