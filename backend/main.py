@@ -7,7 +7,7 @@ Project: AI-Assisted Adaptive English Learning System for Primary Students in Sr
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
-from routers import auth, profile, plan
+from routers import auth, profile, plan, free_activities
 from database import connect_db, close_db
 
 
@@ -48,6 +48,7 @@ app.add_middleware(
 app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])
 app.include_router(profile.router, prefix="/api/profile", tags=["Profile & Progress"])
 app.include_router(plan.router, prefix="/api/plan", tags=["Adaptive Plan & Map"])
+app.include_router(free_activities.router, prefix="/api/free-activities", tags=["Free Activities"])
 
 
 # ─── Root & Health ──────────────────────────────────────────────────────────

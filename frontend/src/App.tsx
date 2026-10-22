@@ -6,6 +6,7 @@ import ParentAuth from './pages/login/ParentAuth'
 import Home from './pages/Home/Home'
 import Profile from './pages/profile/Profile'
 import PersonalPlan from './pages/personal-plan/PersonalPlan'
+import FreeActivities from './pages/free-activities/FreeActivities'
 
 function PlaceholderDashboard({ role }: { role: string }) {
   const isTeacher = role === 'teacher'
@@ -47,6 +48,9 @@ function App() {
 
         {/* Personalized Plan Workspace */}
         <Route path="/personal-plan" element={<PersonalPlan />} />
+
+        {/* Free Trial Activities (no login required) */}
+        <Route path="/free-activities" element={<FreeActivities />} />
 
         {/* Placeholder dashboards (Phase 2) */}
         <Route path="/teacher/dashboard" element={<PlaceholderDashboard role="teacher" />} />

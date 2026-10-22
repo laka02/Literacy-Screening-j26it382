@@ -364,6 +364,7 @@ export default function ListeningStudio({
                 </div>
               </div>
             </div>
+          </div>
 
           {/* Interactive Activities Grid */}
           <div className="se-activities-grid">
