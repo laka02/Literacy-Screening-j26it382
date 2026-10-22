@@ -28,10 +28,23 @@ export interface SkillItem {
 }
 
 export interface StageTaskData {
-  question: string
-  hint: string
-  options: string[]
-  correct_index: number
+  type?: string
+  letter?: string
+  phonics_sound?: string
+  target_word?: string
+  word_meaning?: string
+  total_letters?: number
+  letters_set?: string[]
+  svg_path?: string
+  band?: string
+  activities?: any[]
+  bridge_goal?: string
+  pro_tip?: string
+  question?: string
+  hint?: string
+  options?: string[]
+  correct_index?: number
+  [key: string]: any
 }
 
 export interface StageItem {

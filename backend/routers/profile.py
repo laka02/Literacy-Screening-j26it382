@@ -248,58 +248,59 @@ async def get_progress_and_kpis(authorization: Optional[str] = Header(None), ema
         else:
             student_name = user_doc.get("name", "Young Explorer")
 
-    # 4 Research Components KPIs (Writing, Reading, Speaking, Listening)
+    # Extract stored screening skill scores (or default to current scores)
+    user_scores = user_doc.get("skill_scores", {}) if user_doc and isinstance(user_doc.get("skill_scores"), dict) else {}
+    w_sc = int(user_scores.get("writing", 38))
+    r_sc = int(user_scores.get("reading", 42))
+    s_sc = int(user_scores.get("speaking", 35))
+    l_sc = int(user_scores.get("listening", 40))
+
+    def get_risk_level(score_val: int) -> str:
+        if score_val < 45:
+            return "High Need (Foundational Support)"
+        elif score_val < 75:
+            return "Moderate Need (Guided Practice)"
+        return "Low Risk (Healthy Progress)"
+
+    # 3 Research Components KPIs (Writing, Reading, Listening)
     kpis = [
         ComponentKPI(
             component_name="Writing",
             member_title="Research Component 1",
-            score_percentage=88,
-            risk_level="Low Risk (Healthy)",
+            score_percentage=w_sc,
+            risk_level=get_risk_level(w_sc),
             color="#16a34a",
             icon="draw",
             metrics=[
-                MetricItem(label="Stroke Accuracy", value="91%"),
-                MetricItem(label="Letter Alignment", value="85%"),
-                MetricItem(label="Grip Stamina", value="Normal"),
+                MetricItem(label="Stroke Accuracy", value=f"{w_sc + 3}%"),
+                MetricItem(label="Letter Alignment", value=f"{w_sc - 3}%"),
+                MetricItem(label="Grip Stamina", value="Needs Practice" if w_sc < 50 else "Normal"),
             ],
         ),
         ComponentKPI(
             component_name="Reading",
             member_title="Research Component 2",
-            score_percentage=84,
-            risk_level="On Track (Progressing)",
+            score_percentage=r_sc,
+            risk_level=get_risk_level(r_sc),
             color="#7c3aed",
             icon="auto_stories",
             metrics=[
-                MetricItem(label="Reading Speed", value="84 WPM"),
-                MetricItem(label="Pause Duration", value="1.2s Low"),
-                MetricItem(label="Phonics Accuracy", value="88%"),
-            ],
-        ),
-        ComponentKPI(
-            component_name="Speaking",
-            member_title="Research Component 3",
-            score_percentage=76,
-            risk_level="Mild Need (Practicing)",
-            color="#ea580c",
-            icon="record_voice_over",
-            metrics=[
-                MetricItem(label="Phoneme Clarity", value="74%"),
-                MetricItem(label="Vowel Intonation", value="78%"),
-                MetricItem(label="Pronunciation", value="Good"),
+                MetricItem(label="Reading Speed", value="55 WPM" if r_sc < 50 else "84 WPM"),
+                MetricItem(label="Pause Duration", value="2.8s Noticeable" if r_sc < 50 else "1.2s Low"),
+                MetricItem(label="Phonics Accuracy", value=f"{r_sc}%"),
             ],
         ),
         ComponentKPI(
             component_name="Listening",
-            member_title="Research Component 4",
-            score_percentage=92,
-            risk_level="Mastered (Advanced)",
+            member_title="Research Component 3",
+            score_percentage=l_sc,
+            risk_level=get_risk_level(l_sc),
             color="#0284c7",
             icon="hearing",
             metrics=[
-                MetricItem(label="Sound Distinction", value="94%"),
-                MetricItem(label="Auditory Processing", value="90%"),
-                MetricItem(label="Comprehension", value="92%"),
+                MetricItem(label="Sound Distinction", value=f"{l_sc + 2}%"),
+                MetricItem(label="Auditory Processing", value=f"{l_sc}%"),
+                MetricItem(label="Comprehension", value=f"{l_sc - 2}%"),
             ],
         ),
     ]

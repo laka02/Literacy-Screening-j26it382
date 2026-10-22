@@ -1,6 +1,7 @@
 """Authentication router — Teacher and Parent register/login endpoints."""
 from fastapi import APIRouter, HTTPException, status
 from datetime import datetime
+import random
 from database import get_db
 from models.teacher import TeacherRegister, TeacherLogin
 from models.parent import ParentRegister, ParentLogin
@@ -121,6 +122,15 @@ async def register_parent(parent: ParentRegister):
             detail="This email is already registered. Please log in instead.",
         )
 
+    # Generate random baseline screening scores for new registrants across all skills
+    random_scores = {
+        "writing": random.randint(30, 85),
+        "reading": random.randint(30, 85),
+        "speaking": random.randint(30, 85),
+        "listening": random.randint(30, 85),
+        "vocabulary": random.randint(30, 85),
+    }
+
     parent_doc = {
         "parent_name": parent.parent_name,
         "parent_email": parent.parent_email,
@@ -131,6 +141,7 @@ async def register_parent(parent: ParentRegister):
         "gender": parent.gender,
         "child_image": parent.child_image,
         "role": "parent",
+        "skill_scores": random_scores,
         "created_at": datetime.utcnow(),
     }
 
@@ -158,6 +169,7 @@ async def register_parent(parent: ParentRegister):
             "gender": parent.gender,
             "child_image": parent.child_image,
             "role": "parent",
+            "skill_scores": random_scores,
         },
     }
 
@@ -202,5 +214,6 @@ async def login_parent(credentials: ParentLogin):
             "gender": parent["gender"],
             "child_image": parent.get("child_image"),
             "role": "parent",
+            "skill_scores": parent.get("skill_scores"),
         },
     }

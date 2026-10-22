@@ -337,8 +337,471 @@ def generate_adaptive_plan(skill_type: str, current_score: float, previous_score
                 }
             }
         ]
+    elif selected_skill == "reading":
+        # Rule evaluation for Reading (Phonics, Decoding, Expressive Fluency):
+        # Score < 45: R01, R07, R08, R09, R21, R22 (Foundational sight words, single phonemes, audio echo)
+        # Score 45-74: R02, R07, R08, R10, R22 (Guided blends, two-word phrases, pronunciation cadence)
+        # Score >= 75: R03, R07, R10, R16, R25 (Fluent expression, multi-syllable phrases, story sentences)
+        if band == "low":
+            evaluation["rules_applied"].extend(["R01", "R07", "R08", "R09", "R21", "R22"])
+            s1_acts = [
+                {"id": 1, "word": "APPLE", "phonics": "/æ-p-əl/", "image": "🍎", "sentence": "A sweet red apple.", "prompt": "Can you say this with me? Apple!", "tip": "Open wide for 'Ah' sound!"},
+                {"id": 2, "word": "RIVER", "phonics": "/r-ɪ-v-ər/", "image": "🌊", "sentence": "The river flows gently.", "prompt": "Listen closely: River! Repeat loudly!", "tip": "Roll tongue gently for 'R'!"},
+                {"id": 3, "word": "FOREST", "phonics": "/f-ɔːr-ɪ-s-t/", "image": "🌲", "sentence": "Tall green forest trees.", "prompt": "Help the lion cross: Forest!", "tip": "Speak clearly into the mic!"}
+            ]
+            s2_acts = [
+                {"id": 1, "word": "RED APPLE", "phonics": "/rɛd æ-p-əl/", "image": "🍎", "sentence": "A bright red apple on the branch.", "prompt": "Say both words: Red Apple!", "tip": "Keep a small pause between words."},
+                {"id": 2, "word": "BLUE RIVER", "phonics": "/bluː r-ɪ-v-ər/", "image": "🌊", "sentence": "Water glitters in the blue river.", "prompt": "Repeat clearly: Blue River!", "tip": "Smooth breath out on 'Blue'."},
+                {"id": 3, "word": "LION ROAR", "phonics": "/laɪ-ən rɔːr/", "image": "🦁", "sentence": "The happy lion gave a roar.", "prompt": "One more step across: Lion Roar!", "tip": "Speak strong and proud!"}
+            ]
+            s3_acts = [
+                {"id": 1, "word": "The lion crossed the bridge.", "phonics": "/ðə laɪ-ən krɔst ðə brɪdʒ/", "image": "🌉", "sentence": "Step 1 of the story sentence.", "prompt": "Read the complete story sentence!", "tip": "Read each word smoothly together."},
+                {"id": 2, "word": "He found a golden star.", "phonics": "/hi faʊnd ə ɡoʊl-dən stɑːr/", "image": "⭐", "sentence": "Step 2 of the story adventure.", "prompt": "Almost there: Read with expression!", "tip": "Emphasize 'golden star'!"},
+                {"id": 3, "word": "All the jungle friends cheered.", "phonics": "/ɔːl ðə dʒʌŋ-ɡəl frɛndz tʃɪərd/", "image": "🎉", "sentence": "Adventure champion achievement!", "prompt": "Finish the quest: Final cheer sentence!", "tip": "Smile while speaking!"}
+            ]
+        elif band == "medium":
+            evaluation["rules_applied"].extend(["R02", "R07", "R08", "R10", "R22"])
+            s1_acts = [
+                {"id": 1, "word": "BUTTERFLY", "phonics": "/bʌt-ər-flaɪ/", "image": "🦋", "sentence": "A colorful butterfly fluttered by.", "prompt": "Three syllables: But-ter-fly!", "tip": "Tap your finger for each beat!"},
+                {"id": 2, "word": "SUNSHINE", "phonics": "/sʌn-ʃaɪn/", "image": "☀️", "sentence": "Warm sunshine through the leaves.", "prompt": "Say it bright: Sun-shine!", "tip": "Clear 'sh' sound in the middle!"},
+                {"id": 3, "word": "RAINBOW", "phonics": "/reɪn-boʊ/", "image": "🌈", "sentence": "A rainbow arched over the river.", "prompt": "Cross the bridge with: Rain-bow!", "tip": "Smooth glide between rain and bow!"}
+            ]
+            s2_acts = [
+                {"id": 1, "word": "WOODEN BRIDGE", "phonics": "/wʊd-ən brɪdʒ/", "image": "🪵", "sentence": "Step lightly across the wooden bridge.", "prompt": "Speak clearly: Wooden Bridge!", "tip": "Crisp 'd' in wooden."},
+                {"id": 2, "word": "SILVER STREAM", "phonics": "/sɪl-vər striːm/", "image": "💧", "sentence": "Clean water in the silver stream.", "prompt": "Listen and repeat: Silver Stream!", "tip": "Blend 'str' cleanly in stream."},
+                {"id": 3, "word": "HAPPY MONKEY", "phonics": "/hæp-i mʌŋ-ki/", "image": "🐵", "sentence": "A happy monkey swung from the vine.", "prompt": "Final bridge step: Happy Monkey!", "tip": "Keep your voice bouncy and lively!"}
+            ]
+            s3_acts = [
+                {"id": 1, "word": "Ruby the deer leaped over the log.", "phonics": "/ruː-bi ðə dɪər liːpt oʊ-vər ðə lɔːɡ/", "image": "🦌", "sentence": "Story flow practice.", "prompt": "Read the story sentence with rhythm!", "tip": "Keep a steady walking rhythm."},
+                {"id": 2, "word": "The jungle path was bright and warm.", "phonics": "/ðə dʒʌŋ-ɡəl pæθ wʌz braɪt ænd wɔːrm/", "image": "🌿", "sentence": "Atmospheric reading.", "prompt": "Speak clearly: The jungle path was bright!", "tip": "Pause gently at natural breaks."},
+                {"id": 3, "word": "They celebrated with fresh mangoes.", "phonics": "/ðeɪ sɛl-ə-breɪ-tɪd wɪð frɛʃ mæŋ-ɡoʊz/", "image": "🥭", "sentence": "Celebration milestone.", "prompt": "Conquer stage 3: Final sentence!", "tip": "Crisp ending on mangoes!"}
+            ]
+        else:
+            evaluation["rules_applied"].extend(["R03", "R07", "R10", "R16", "R25"])
+            s1_acts = [
+                {"id": 1, "word": "EXTRAORDINARY", "phonics": "/ɪk-strɔːr-dən-ɛr-i/", "image": "✨", "sentence": "An extraordinary journey through Sri Lanka.", "prompt": "Master this big word: Ex-traor-di-na-ry!", "tip": "Pace each syllable without rushing."},
+                {"id": 2, "word": "COURAGEOUS", "phonics": "/kə-reɪ-dʒəs/", "image": "🦁", "sentence": "The courageous lion stepped forward.", "prompt": "Say it with boldness: Cou-ra-geous!", "tip": "Strong middle 'ray' stress."},
+                {"id": 3, "word": "SPLENDID", "phonics": "/splɛn-dɪd/", "image": "🌟", "sentence": "A splendid view from the top of Sigiriya.", "prompt": "Cross the bridge: Splen-did!", "tip": "Crisp blend on 'spl'!"}
+            ]
+            s2_acts = [
+                {"id": 1, "word": "ANCIENT FORTRESS", "phonics": "/eɪn-ʃənt fɔːr-trɪs/", "image": "🏰", "sentence": "They explored the ancient fortress.", "prompt": "Read phrase: Ancient Fortress!", "tip": "Soft 'sh' in ancient."},
+                {"id": 2, "word": "MISTY MOUNTAINS", "phonics": "/mɪs-ti maʊn-tənz/", "image": "⛰️", "sentence": "Clouds drift across the misty mountains.", "prompt": "Repeat: Misty Mountains!", "tip": "Gentle breath on misty."},
+                {"id": 3, "word": "GOLDEN HORIZON", "phonics": "/ɡoʊl-dən hə-raɪ-zən/", "image": "🌅", "sentence": "Sunset lit the golden horizon.", "prompt": "Reach the goal: Golden Horizon!", "tip": "Rise and fall naturally in pitch."}
+            ]
+            s3_acts = [
+                {"id": 1, "word": "The travelers marveled at the whispering waterfalls.", "phonics": "/ðə træv-əl-ərz mɑːr-vəld æt ðə wɪs-pər-ɪŋ wɔː-tər-fɔːlz/", "image": "🌊", "sentence": "Poetic reading mastery.", "prompt": "Read with expressive cadence and depth!", "tip": "Paint the picture with your voice."},
+                {"id": 2, "word": "Every step brought a discovery more wonderful than the last.", "phonics": "/ɛv-ri stɛp brɔːt ə dɪ-skʌv-ər-i mɔːr wʌn-dər-fəl ðæn ðə læst/", "image": "🧭", "sentence": "Story climax reading.", "prompt": "Read with confidence and dramatic flair!", "tip": "Keep your breathing calm and steady."},
+                {"id": 3, "word": "United by adventure, they stood proud as literacy champions.", "phonics": "/juː-naɪ-tɪd baɪ æd-vɛn-tʃər ðeɪ stʊd praʊd æz lɪt-ər-ə-si tʃæm-pi-ənz/", "image": "🏆", "sentence": "Trophy mastery passage.", "prompt": "Deliver the champion grand finale!", "tip": "Finish strong and proud!"}
+            ]
+
+        stages = [
+            {
+                "stage_number": 1,
+                "title": f"Stage 1: Speak & Repeat — {s1_acts[0]['word']} Safari",
+                "difficulty": "Easy (Phonics & Sight Words)",
+                "description": "Listen to the guide and repeat each word into the microphone to help the lion cross the bridge.",
+                "rules": ["R01", "R07", "R08", "R09", "R22"],
+                "xp_reward": 50,
+                "stars": 3,
+                "locked": False,
+                "status": "Ready",
+                "task_data": {
+                    "type": "reading_speak_repeat",
+                    "target_skill": "reading",
+                    "band": band,
+                    "activities": s1_acts,
+                    "total_activities": len(s1_acts),
+                    "pro_tip": "Speak loudly and clearly into the microphone. Don't rush!",
+                    "bridge_goal": "Help the lion cross the bridge!",
+                    "question": f"Speak & Repeat Challenge: Say '{s1_acts[0]['word']}' to move the lion forward!",
+                    "options": [s1_acts[0]["word"], s1_acts[1]["word"], s1_acts[2]["word"]],
+                    "correct_index": 0,
+                    "hint": "Listen carefully to the sound, then tap the mic and speak!"
+                }
+            },
+            {
+                "stage_number": 2,
+                "title": f"Stage 2: Speak & Repeat — Word Blends & Pairs",
+                "difficulty": "Moderate (Guided Phonics Pairs)",
+                "description": "Combine words into natural Sri Lankan jungle phrases with correct tempo and stress.",
+                "rules": ["R02", "R07", "R08", "R10", "R22"],
+                "xp_reward": 75,
+                "stars": 3,
+                "locked": True,
+                "status": "Locked",
+                "task_data": {
+                    "type": "reading_speak_repeat",
+                    "target_skill": "reading",
+                    "band": band,
+                    "activities": s2_acts,
+                    "total_activities": len(s2_acts),
+                    "pro_tip": "Leave a tiny breath between words so each word is clear and bright!",
+                    "bridge_goal": "Help the mascot cross the rushing river bridge!",
+                    "question": f"Speak & Repeat Challenge: Say '{s2_acts[0]['word']}' clearly!",
+                    "options": [s2_acts[0]["word"], s2_acts[1]["word"], s2_acts[2]["word"]],
+                    "correct_index": 0,
+                    "hint": "Listen to how the guide blends the words, then repeat!"
+                }
+            },
+            {
+                "stage_number": 3,
+                "title": "Stage 3: Speak & Repeat — Story Sentence Mastery",
+                "difficulty": "Challenge (Full Story Sentences)",
+                "description": "Read complete story sentences with expressive cadence, natural pauses, and confidence.",
+                "rules": ["R03", "R07", "R10", "R16", "R25"],
+                "xp_reward": 100,
+                "stars": 3,
+                "locked": True,
+                "status": "Locked",
+                "task_data": {
+                    "type": "reading_speak_repeat",
+                    "target_skill": "reading",
+                    "band": band,
+                    "activities": s3_acts,
+                    "total_activities": len(s3_acts),
+                    "pro_tip": "Read with feeling! Imagine you are telling this adventure to your friends!",
+                    "bridge_goal": "Guide the adventure team across the final champion bridge to the golden trophy!",
+                    "question": f"Speak & Repeat Challenge: Read the full story sentence aloud!",
+                    "options": [s3_acts[0]["word"], s3_acts[1]["word"], s3_acts[2]["word"]],
+                    "correct_index": 0,
+                    "hint": "Read smoothly from left to right like a true story champion!"
+                }
+            }
+        ]
+    elif selected_skill == "listening":
+        # ── LISTENING COMPREHENSION ADAPTIVE BRANCH ─────────────────────────
+        # Evaluates auditory processing, focus & comprehension (R02, R06, R18, R22)
+        evaluation["rules_applied"] = list(set(evaluation["rules_applied"] + ["R02", "R06", "R18", "R22"]))
+
+        if band == "low":
+            # Foundational: Simple sentences, familiar characters, explicit clues
+            s1_scene = {
+                "scene_title": "Tommy the Little Rabbit",
+                "character": "🐰 Tommy the Little Rabbit",
+                "image": "🐰🥕🌸",
+                "hero_image": "https://lh3.googleusercontent.com/aida-public/AB6AXuCJbFzZmwGiE99Z2ai-PtBQ3egMU9hVLkkthqYpM369usNTXaIZ6cacXON1QZTYUMucYhfiF8nCAOVbia4duIUAyWzbxgyNr3Yn5opgURbnbHy8auyBIzEQNL5Yfd8Le2hfxz0-38uNv9v01bHfalcKA9kHrKz6ZM9-5XKGS3kgv1-P77TCVgEa9AQm9IrLjvl8rXm0r0wmGWYPzN7vkWMXaNSRnKTSboedNwxyqoZjcczsOBc06ikitg",
+                "story_text": "Tommy is a little rabbit. He lives near a green forest. Tommy loves to eat carrots.",
+                "highlight_word": "carrots",
+                "audio_text": "Tommy is a little rabbit. He lives near a green forest. Tommy loves to eat carrots.",
+                "sentence": "Tommy is a little rabbit. He lives near a green forest. Tommy loves to eat carrots.",
+                "picture_options": [
+                    {
+                        "label": "Carrot",
+                        "emoji": "🥕",
+                        "img": "https://lh3.googleusercontent.com/aida-public/AB6AXuBqJFohEZjKyDCC0CR17xgQPNSk5XlbvtKszrDcvxc1mCbec0FP0UEylnIkhfwLQr7aZTELrqJ9Vr5-A9vP7xPfxUciUwzh1JEQwFKNzIQ8e0U3X75lhn2BJCvWpUkRWgwFltXVTC4yr2aV8-ZmaNiZ4Ip7O_fniqC0IS3wtmRgSMji7dT_-x1m2Meq0WU1aVqCjT5bAFxp2U1TJgj1_KdRufMYT8NJuM7-Xom7mUrwP0EvH8LPr8qLDg"
+                    },
+                    {
+                        "label": "Apple",
+                        "emoji": "🍎",
+                        "img": "https://lh3.googleusercontent.com/aida-public/AB6AXuBqJFohEZjKyDCC0CR17xgQPNSk5XlbvtKszrDcvxc1mCbec0FP0UEylnIkhfwLQr7aZTELrqJ9Vr5-A9vP7xPfxUciUwzh1JEQwFKNzIQ8e0U3X75lhn2BJCvWpUkRWgwFltXVTC4yr2aV8-ZmaNiZ4Ip7O_fniqC0IS3wtmRgSMji7dT_-x1m2Meq0WU1aVqCjT5bAFxp2U1TJgj1_KdRufMYT8NJuM7-Xom7mUrwP0EvH8LPr8qLDg"
+                    },
+                    {
+                        "label": "Pizza",
+                        "emoji": "🍕",
+                        "img": "https://lh3.googleusercontent.com/aida-public/AB6AXuBqJFohEZjKyDCC0CR17xgQPNSk5XlbvtKszrDcvxc1mCbec0FP0UEylnIkhfwLQr7aZTELrqJ9Vr5-A9vP7xPfxUciUwzh1JEQwFKNzIQ8e0U3X75lhn2BJCvWpUkRWgwFltXVTC4yr2aV8-ZmaNiZ4Ip7O_fniqC0IS3wtmRgSMji7dT_-x1m2Meq0WU1aVqCjT5bAFxp2U1TJgj1_KdRufMYT8NJuM7-Xom7mUrwP0EvH8LPr8qLDg"
+                    }
+                ],
+                "blank_sentence": {
+                    "prefix": "Tommy is a little",
+                    "suffix": ".",
+                    "correct": "Rabbit",
+                    "options": ["Rabbit", "Bear"]
+                },
+                "sequence_steps": [
+                    {"step": 1, "label": "Forest Path", "emoji": "🌲", "img": "https://lh3.googleusercontent.com/aida-public/AB6AXuC6W0jz8BJDT9nK-pjnmrSAcxpnTFGdViDv-7xQrI58YESwPvLFif8dAgIpi54R-RZeejvWonVk1YwHDqXsGV7QLfKwUZzxw6uR65x9SApheLxluaQ6KLKH-LNJ8JIkOsjyKhzrnE9SUslL7eI_HxEFwzk9vRpuhCLMdk1m2LVjij3Rjxr8ZS6ohIPlv72d4G642dBsNdJ0nWblO1IdYb6Wu9PwO8b4SZ40wLeTk6qOReh82O0xHlfwUw"},
+                    {"step": 2, "label": "Tommy Hopping", "emoji": "🐰"},
+                    {"step": 3, "label": "Eating Carrots", "emoji": "🥕"}
+                ],
+                "questions": [
+                    {
+                        "id": 1,
+                        "question": "What does Tommy like?",
+                        "options": ["Carrot", "Apple", "Pizza"],
+                        "correct_index": 0,
+                        "hint": "Listen carefully to what Tommy loves to eat!"
+                    },
+                    {
+                        "id": 2,
+                        "question": "Fill in the missing word: Tommy is a little...",
+                        "options": ["Rabbit", "Bear"],
+                        "correct_index": 0,
+                        "hint": "Tommy is a friendly hopping animal with long ears!"
+                    }
+                ]
+            }
+            s2_scene = {
+                "scene_title": "The Silver Fish in the Clear River",
+                "image": "🐟🌊🌿",
+                "audio_text": "Three silver fish are swimming happily in the cool, clear river water.",
+                "sentence": "Three silver fish swim in the cool, clear river.",
+                "questions": [
+                    {
+                        "id": 1,
+                        "question": "How many fish are swimming in the river?",
+                        "options": ["Three fish", "One fish", "Ten fish"],
+                        "correct_index": 0,
+                        "hint": "Count the number mentioned right at the start!"
+                    },
+                    {
+                        "id": 2,
+                        "question": "How does the river water feel?",
+                        "options": ["Cool and clear", "Hot and muddy", "Dark and stormy"],
+                        "correct_index": 0,
+                        "hint": "It feels refreshing on a sunny day!"
+                    }
+                ]
+            }
+            s3_scene = {
+                "scene_title": "Yellow Birds at Sunrise",
+                "image": "🌄🦜🌸",
+                "audio_text": "Early in the morning, bright yellow birds sing joyful songs from flowering branches.",
+                "sentence": "Yellow birds sing joyful songs from flowering branches.",
+                "questions": [
+                    {
+                        "id": 1,
+                        "question": "When do the bright yellow birds sing?",
+                        "options": ["Early in the morning", "At midnight", "During dinner time"],
+                        "correct_index": 0,
+                        "hint": "Think about when the sun first rises!"
+                    },
+                    {
+                        "id": 2,
+                        "question": "What color are the singing birds?",
+                        "options": ["Bright yellow", "Deep purple", "Pitch black"],
+                        "correct_index": 0,
+                        "hint": "They look like bright little drops of sunshine!"
+                    }
+                ]
+            }
+        elif band == "medium":
+            # Guided: Multi-clause sentences, contextual cues, descriptive adjectives
+            s1_scene = {
+                "scene_title": "Monkeys by the Roaring Waterfall",
+                "image": "🏞️🐒💧",
+                "audio_text": "A family of playful monkeys swings across the vine bridges right beside the roaring white waterfall.",
+                "sentence": "Playful monkeys swing across vines beside the roaring waterfall.",
+                "questions": [
+                    {
+                        "id": 1,
+                        "question": "What sound does the waterfall make?",
+                        "options": ["Roaring and loud", "Silent and still", "Beeping like a horn"],
+                        "correct_index": 0,
+                        "hint": "Listen to the word describing the rushing water!"
+                    },
+                    {
+                        "id": 2,
+                        "question": "How do the monkeys travel near the waterfall?",
+                        "options": ["Swinging on vine bridges", "Riding in wooden boats", "Walking along a sidewalk"],
+                        "correct_index": 0,
+                        "hint": "They use jungle vines to cross!"
+                    }
+                ]
+            }
+            s2_scene = {
+                "scene_title": "Golden Harvest in the Village",
+                "image": "🌾🥁☀️",
+                "audio_text": "Farmers in straw hats gather bundles of golden rice under warm sunshine while festival drums echo across the valley.",
+                "sentence": "Farmers gather golden rice under sunshine while drums echo.",
+                "questions": [
+                    {
+                        "id": 1,
+                        "question": "What instruments echo across the valley?",
+                        "options": ["Festival drums", "Electric guitars", "Train whistles"],
+                        "correct_index": 0,
+                        "hint": "Traditional instruments played during harvests!"
+                    },
+                    {
+                        "id": 2,
+                        "question": "What are the farmers wearing on their heads?",
+                        "options": ["Straw hats", "Heavy iron helmets", "Woolen winter beanies"],
+                        "correct_index": 0,
+                        "hint": "Hats made from dried straw to block the sun!"
+                    }
+                ]
+            }
+            s3_scene = {
+                "scene_title": "Island Lighthouse Beacon",
+                "image": "🏮⛵🌊",
+                "audio_text": "The tall red lighthouse flashes its bright beam three times every minute to guide small fishing boats safely to the harbor.",
+                "sentence": "The red lighthouse flashes its beam to guide boats to the harbor.",
+                "questions": [
+                    {
+                        "id": 1,
+                        "question": "How many times does the lighthouse beam flash each minute?",
+                        "options": ["Three times", "Once an hour", "Ten times per second"],
+                        "correct_index": 0,
+                        "hint": "Count the flashes mentioned in the audio!"
+                    },
+                    {
+                        "id": 2,
+                        "question": "Why does the lighthouse flash its bright beam?",
+                        "options": ["To guide boats safely to the harbor", "To attract wild seagulls", "To wake up the villagers"],
+                        "correct_index": 0,
+                        "hint": "It keeps fishermen safe in the dark waters!"
+                    }
+                ]
+            }
+        else:
+            # High: Complex descriptive passages, inferential questions, rich Sri Lankan scenery
+            s1_scene = {
+                "scene_title": "The Lion Rock Citadel",
+                "image": "🦁🏰🌤️",
+                "audio_text": "Perched atop the ancient granite fortress, monumental stone lion paws stand as timeless sentinels watching over emerald valleys.",
+                "sentence": "Monumental stone lion paws stand as sentinels watching over emerald valleys.",
+                "questions": [
+                    {
+                        "id": 1,
+                        "question": "What do the monumental stone lion paws act as?",
+                        "options": ["Timeless sentinels watching over the valley", "Simple decorative pet carvings", "Temporary modern pillars"],
+                        "correct_index": 0,
+                        "hint": "A sentinel is a noble guardian!"
+                    },
+                    {
+                        "id": 2,
+                        "question": "What natural landscape surrounds the ancient fortress?",
+                        "options": ["Emerald misty valleys", "Dry endless desert dunes", "Frozen ice plains"],
+                        "correct_index": 0,
+                        "hint": "Think of lush green forests!"
+                    }
+                ]
+            }
+            s2_scene = {
+                "scene_title": "Nocturnal Rain Forest Melody",
+                "image": "⛈️🍃🦉",
+                "audio_text": "As distant thunder rolls across the mountain ridge, nocturnal owls exchange resonant calls amidst the rhythmic patter of monsoon rain.",
+                "sentence": "Nocturnal owls exchange resonant calls amidst the rhythmic patter of monsoon rain.",
+                "questions": [
+                    {
+                        "id": 1,
+                        "question": "Which natural sound accompanies the owls' nocturnal calls?",
+                        "options": ["Rhythmic patter of monsoon rain", "Screeching city traffic", "Hum of factory machinery"],
+                        "correct_index": 0,
+                        "hint": "Listen for the sound falling from the stormy sky!"
+                    },
+                    {
+                        "id": 2,
+                        "question": "What atmospheric event rolls across the mountain ridge?",
+                        "options": ["Distant thunder", "A blazing fireworks show", "A speeding railway train"],
+                        "correct_index": 0,
+                        "hint": "A deep rumbling sound during a storm!"
+                    }
+                ]
+            }
+            s3_scene = {
+                "scene_title": "Subterranean Cavern Acoustics",
+                "image": "💎🦇💧",
+                "audio_text": "Inside the sacred limestone cavern, crystal water droplets resonate in pure acoustic harmony, echoing through ancient winding passages.",
+                "sentence": "Crystal water droplets resonate in pure acoustic harmony inside the limestone cavern.",
+                "questions": [
+                    {
+                        "id": 1,
+                        "question": "What creates the pure acoustic harmony inside the cavern?",
+                        "options": ["Crystal water droplets resonating", "A mechanical chime clock", "Loud speakers playing music"],
+                        "correct_index": 0,
+                        "hint": "Natural drops of water hitting the cave floor!"
+                    },
+                    {
+                        "id": 2,
+                        "question": "What material forms the winding passages of the cavern?",
+                        "options": ["Sacred limestone rock", "Black volcanic glass", "Soft synthetic plastic"],
+                        "correct_index": 0,
+                        "hint": "The natural stone forming the ancient caves!"
+                    }
+                ]
+            }
+
+        stages = [
+            {
+                "stage_number": 1,
+                "title": f"Stage 1: {s1_scene['scene_title']}",
+                "difficulty": "Easy (Foundational)" if band == "low" else "Warm-up" if band == "medium" else "Advanced Ear",
+                "description": f"Listen to the scene description and answer 2 comprehension questions.",
+                "rules": ["R01", "R06", "R18", "R22"],
+                "xp_reward": 50,
+                "stars": 3,
+                "locked": False,
+                "status": "Ready",
+                "task_data": {
+                    "type": "listening_comprehension",
+                    "target_skill": "listening",
+                    "band": band,
+                    "scene_title": s1_scene["scene_title"],
+                    "character": s1_scene.get("character", s1_scene["scene_title"]),
+                    "hero_image": s1_scene.get("hero_image"),
+                    "story_text": s1_scene.get("story_text", s1_scene["sentence"]),
+                    "highlight_word": s1_scene.get("highlight_word", "carrots"),
+                    "picture_options": s1_scene.get("picture_options", []),
+                    "blank_sentence": s1_scene.get("blank_sentence"),
+                    "sequence_steps": s1_scene.get("sequence_steps", []),
+                    "image": s1_scene["image"],
+                    "audio_text": s1_scene["audio_text"],
+                    "sentence": s1_scene["sentence"],
+                    "questions": s1_scene["questions"],
+                    "pro_tip": "Close your eyes while listening to visualize the scene in your mind!",
+                    "bridge_goal": "Listen to the scene and solve the activities to build the first bridge!",
+                    "question": s1_scene["questions"][0]["question"],
+                    "options": s1_scene["questions"][0]["options"],
+                    "correct_index": s1_scene["questions"][0]["correct_index"],
+                    "hint": s1_scene["questions"][0]["hint"],
+                }
+            },
+            {
+                "stage_number": 2,
+                "title": f"Stage 2: {s2_scene['scene_title']}",
+                "difficulty": "Moderate (Guided Practice)",
+                "description": f"Focus on auditory details and keywords to answer both questions correctly.",
+                "rules": ["R02", "R06", "R18", "R23"],
+                "xp_reward": 75,
+                "stars": 3,
+                "locked": True,
+                "status": "Locked",
+                "task_data": {
+                    "type": "listening_comprehension",
+                    "target_skill": "listening",
+                    "band": band,
+                    "scene_title": s2_scene["scene_title"],
+                    "image": s2_scene["image"],
+                    "audio_text": s2_scene["audio_text"],
+                    "sentence": s2_scene["sentence"],
+                    "questions": s2_scene["questions"],
+                    "pro_tip": "Replay the audio if you need to catch details like numbers or colors!",
+                    "bridge_goal": "Cross the river of sound by unlocking both clue answers!",
+                    "question": s2_scene["questions"][0]["question"],
+                    "options": s2_scene["questions"][0]["options"],
+                    "correct_index": s2_scene["questions"][0]["correct_index"],
+                    "hint": s2_scene["questions"][0]["hint"],
+                }
+            },
+            {
+                "stage_number": 3,
+                "title": f"Stage 3: {s3_scene['scene_title']}",
+                "difficulty": "Challenge (Mastery Stretch)",
+                "description": f"Ultimate listening test! Comprehend full descriptive sentences to win the golden trophy.",
+                "rules": ["R03", "R06", "R16", "R25"],
+                "xp_reward": 100,
+                "stars": 3,
+                "locked": True,
+                "status": "Locked",
+                "task_data": {
+                    "type": "listening_comprehension",
+                    "target_skill": "listening",
+                    "band": band,
+                    "scene_title": s3_scene["scene_title"],
+                    "image": s3_scene["image"],
+                    "audio_text": s3_scene["audio_text"],
+                    "sentence": s3_scene["sentence"],
+                    "questions": s3_scene["questions"],
+                    "pro_tip": "You are a master listener! Notice subtle adjectives and actions in the story!",
+                    "bridge_goal": "Reach the golden audio trophy at the end of the quest!",
+                    "question": s3_scene["questions"][0]["question"],
+                    "options": s3_scene["questions"][0]["options"],
+                    "correct_index": s3_scene["questions"][0]["correct_index"],
+                    "hint": s3_scene["questions"][0]["hint"],
+                }
+            }
+        ]
     else:
-        # Generic 3-Stage Adventure Plan for other skills
+        # Fallback 3-Stage Plan
         stages = [
             {
                 "stage_number": 1,

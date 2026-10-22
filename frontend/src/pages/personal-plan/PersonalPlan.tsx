@@ -9,6 +9,8 @@ import {
   AdaptivePlanResponse,
   StageItem,
 } from '../../api/plan'
+import ReadingStudio from './ReadingStudio'
+import ListeningStudio from './listening/ListeningStudio'
 import './PersonalPlan.css'
 
 const ALPHABET_LIST = [
@@ -40,18 +42,6 @@ const DEFAULT_SKILLS: SkillItem[] = [
     performance_band: 'high',
     tagline: 'Read playful Sri Lankan adventure tales with minimal hesitation pauses!',
     rules_applied: ['R03', 'R07', 'R16', 'R33'],
-  },
-  {
-    id: 'speaking',
-    name: 'Speaking',
-    animal_guide: 'Oliver the Owl',
-    guide_avatar: '🦉',
-    icon: 'record_voice_over',
-    color: '#ea580c',
-    current_score: 76,
-    performance_band: 'medium',
-    tagline: 'Echo voice challenge, phoneme clarity & natural sentence pacing!',
-    rules_applied: ['R02', 'R05', 'R10', 'R23'],
   },
   {
     id: 'listening',
@@ -512,7 +502,7 @@ export default function PersonalPlan() {
             <section className="journey-ai-card">
               <div className="journey-ai-glow-1" />
               <div className="journey-ai-glow-2" />
-              
+
               <div className="journey-ai-peek">
                 <span>🤖</span>
               </div>
@@ -525,21 +515,21 @@ export default function PersonalPlan() {
               </div>
 
               <p className="journey-ai-quote">
-                CAIRE recommends: Based on your <strong>{selectedSkill.current_score}% Literacy Screening</strong>, 
+                CAIRE recommends: Based on your <strong>{selectedSkill.current_score}% Literacy Screening</strong>,
                 let&apos;s conquer <strong>{selectedSkill.name}</strong> with <strong>{selectedSkill.animal_guide}</strong>! 🌟
               </p>
 
               <div className="journey-quick-chips">
-                <button 
-                  className="journey-chip-btn" 
+                <button
+                  className="journey-chip-btn"
                   style={{ background: '#fef3c7', color: '#92400e', border: '1.5px solid #fde68a' }}
                   onClick={() => handleSpeakText(`Let's explore ${selectedSkill.name} with ${selectedSkill.animal_guide}!`)}
                 >
                   <span>🟠</span>
                   <span>{selectedSkill.name} Quest</span>
                 </button>
-                <button 
-                  className="journey-chip-btn" 
+                <button
+                  className="journey-chip-btn"
                   style={{ background: '#dbeafe', color: '#1e40af', border: '1.5px solid #bfdbfe' }}
                   onClick={() => {
                     const firstUnlocked = activePlan.stages.find(s => s.stage_number === 1 || stagesProgress[s.stage_number - 1])
@@ -549,8 +539,8 @@ export default function PersonalPlan() {
                   <span>🔵</span>
                   <span>Interactive Challenge</span>
                 </button>
-                <button 
-                  className="journey-chip-btn" 
+                <button
+                  className="journey-chip-btn"
                   style={{ background: '#f3e8ff', color: '#6b21a8', border: '1.5px solid #e9d5ff' }}
                   onClick={() => handleSpeakText(`${selectedSkill.animal_guide} is ready to guide you through three exciting adventure stages!`)}
                 >
@@ -714,7 +704,7 @@ export default function PersonalPlan() {
                 {(() => {
                   const allDone = stagesProgress[1] && stagesProgress[2] && stagesProgress[3]
                   return (
-                    <div 
+                    <div
                       className="journey-node-row shift-center"
                       onClick={() => {
                         if (allDone) {
@@ -738,30 +728,6 @@ export default function PersonalPlan() {
                 })()}
               </div>
             </section>
-
-            {/* Expert Guidance & Rules Inspector Card */}
-            <div className="rules-applied-card">
-              <div className="rules-card-header">
-                <h3 className="rules-card-title">
-                  <span className="material-symbols-outlined" style={{ color: '#0058be' }}>
-                    policy
-                  </span>
-                  <span>Expert Rules Applied to this Roadmap</span>
-                </h3>
-                <span style={{ fontSize: '12px', fontWeight: 700, color: '#64748b' }}>
-                  CAIRE Adaptive Rule Engine (R01–R40)
-                </span>
-              </div>
-
-              <div className="rules-chips-list">
-                {activePlan.rules_manifest.map((r) => (
-                  <div key={r.code} className="rule-chip-item" title={r.description}>
-                    <span className="rule-code-tag">{r.code}</span>
-                    <span>{r.description}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
           </div>
         )}
       </main>
@@ -810,7 +776,7 @@ export default function PersonalPlan() {
                         Math.round(
                           ((Math.max(1, ALPHABET_LIST.indexOf(activeWritingLetter) + 1)) /
                             (activeGameStage.task_data?.total_letters || 26)) *
-                            100
+                          100
                         )
                       )}%`,
                     }}
@@ -850,7 +816,7 @@ export default function PersonalPlan() {
                     onClick={() =>
                       handleSpeakText(
                         activeGameStage.task_data?.phonics_sound ||
-                          `${activeWritingLetter} says /${activeWritingLetter.toLowerCase()}/. Listen and trace!`
+                        `${activeWritingLetter} says /${activeWritingLetter.toLowerCase()}/. Listen and trace!`
                       )
                     }
                     title="Listen to Phonics Sound"
@@ -1004,8 +970,70 @@ export default function PersonalPlan() {
               </div>
             </main>
           </div>
+        ) : activeGameStage.task_data?.type === 'reading_speak_repeat' ? (
+          /* ── Reading Speak & Repeat Adventure Studio ── */
+          <ReadingStudio
+            stage={activeGameStage as any}
+            skillAvatar={selectedSkill?.guide_avatar || '🦌'}
+            animalGuide={selectedSkill?.animal_guide || 'Ruby the Deer'}
+            skillColor={selectedSkill?.color || '#7c3aed'}
+            childName={childDisplayName}
+            onClose={() => setActiveGameStage(null)}
+            onComplete={async (stageNumber) => {
+              const currentStage = activeGameStage
+              try {
+                await completeStageApi(
+                  selectedSkill?.id || 'reading',
+                  stageNumber,
+                  currentStage?.title || '',
+                  100,
+                  currentStage?.xp_reward || 75,
+                  0,
+                  1,
+                  currentUser?.email
+                )
+              } catch (e) {
+                console.warn('Stage save warning:', e)
+              }
+              setStagesProgress((prev) => ({ ...prev, [stageNumber]: true }))
+              setLastCompletedStage(currentStage)
+              setActiveGameStage(null)
+              setShowCelebration(true)
+            }}
+          />
+        ) : activeGameStage.task_data?.type === 'listening_comprehension' ? (
+          /* ── Listening Comprehension Adventure Studio ── */
+          <ListeningStudio
+            stage={activeGameStage as any}
+            skillAvatar={selectedSkill?.guide_avatar || '🐻'}
+            animalGuide={selectedSkill?.animal_guide || 'Barnaby the Bear'}
+            skillColor={selectedSkill?.color || '#0284c7'}
+            childName={childDisplayName}
+            onClose={() => setActiveGameStage(null)}
+            onComplete={async (stageNumber) => {
+              const currentStage = activeGameStage
+              try {
+                await completeStageApi(
+                  selectedSkill?.id || 'listening',
+                  stageNumber,
+                  currentStage?.title || '',
+                  100,
+                  currentStage?.xp_reward || 75,
+                  0,
+                  1,
+                  currentUser?.email
+                )
+              } catch (e) {
+                console.warn('Stage save warning:', e)
+              }
+              setStagesProgress((prev) => ({ ...prev, [stageNumber]: true }))
+              setLastCompletedStage(currentStage)
+              setActiveGameStage(null)
+              setShowCelebration(true)
+            }}
+          />
         ) : (
-          /* Standard Quiz Modal for Reading, Speaking, Listening */
+          /* Standard Quiz Modal for Speaking, Listening, and other skills */
           <div className="game-modal-backdrop" onClick={() => setActiveGameStage(null)}>
             <div className="game-modal-box" onClick={(e) => e.stopPropagation()}>
               <div className="game-modal-header">
@@ -1028,10 +1056,10 @@ export default function PersonalPlan() {
 
               {/* Question prompt */}
               <div className="game-question-box">
-                <h3 className="game-question-text">{activeGameStage.task_data.question}</h3>
+                <h3 className="game-question-text">{activeGameStage.task_data.question || 'Choose the correct answer:'}</h3>
                 <button
                   className="btn-speak-question"
-                  onClick={() => handleSpeakText(activeGameStage.task_data.question)}
+                  onClick={() => handleSpeakText(activeGameStage.task_data.question || '')}
                 >
                   <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>
                     volume_up
@@ -1042,7 +1070,7 @@ export default function PersonalPlan() {
 
               {/* Options selection */}
               <div className="game-options-grid">
-                {activeGameStage.task_data.options.map((opt, idx) => {
+                {(activeGameStage.task_data.options || []).map((opt, idx) => {
                   let statusClass = ''
                   if (selectedOption === idx) {
                     statusClass = answerStatus === 'correct' ? 'correct' : 'wrong'
@@ -1082,7 +1110,7 @@ export default function PersonalPlan() {
                     <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>
                       lightbulb
                     </span>
-                    <span>Ask {selectedSkill?.animal_guide.split(' ')[0]} for a Hint (Rule R18, R22)</span>
+                    <span>Ask {selectedSkill?.animal_guide.split(' ')[0]} for a Hint</span>
                   </button>
                 ) : (
                   <div className="game-hint-box">

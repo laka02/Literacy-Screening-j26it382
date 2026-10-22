@@ -39,21 +39,8 @@ const DEFAULT_KPIS: ComponentKPI[] = [
     ],
   },
   {
-    component_name: 'Speaking',
-    member_title: 'Research Component 3',
-    score_percentage: 76,
-    risk_level: 'Mild Need (Practicing)',
-    color: '#ea580c',
-    icon: 'record_voice_over',
-    metrics: [
-      { label: 'Phoneme Clarity', value: '74%' },
-      { label: 'Vowel Intonation', value: '78%' },
-      { label: 'Pronunciation', value: 'Good' },
-    ],
-  },
-  {
     component_name: 'Listening',
-    member_title: 'Research Component 4',
+    member_title: 'Research Component 3',
     score_percentage: 92,
     risk_level: 'Mastered (Advanced)',
     color: '#0284c7',
@@ -423,13 +410,15 @@ export default function Profile() {
                 <span>Literacy Screening Results &amp; Research KPIs</span>
               </h2>
               <p className="section-block-sub">
-                Evaluations across Writing, Reading, Speaking &amp; Listening research components
+                Evaluations across Writing, Reading &amp; Listening research components
               </p>
             </div>
           </div>
 
           <div className="kpi-cards-grid">
-            {(progress?.kpis && progress.kpis.length > 0 ? progress.kpis : DEFAULT_KPIS).map((kpi, idx) => (
+            {(progress?.kpis && progress.kpis.length > 0 ? progress.kpis : DEFAULT_KPIS)
+              .filter((k) => k.component_name.toLowerCase() !== 'speaking')
+              .map((kpi, idx) => (
               <div key={idx} className="kpi-card">
                 <div>
                   <div className="kpi-card-top">

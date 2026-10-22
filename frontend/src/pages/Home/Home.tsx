@@ -230,16 +230,10 @@ export default function Home() {
 
               {/* 3D Action Buttons */}
               <div className="hero-buttons-group">
-                <button className="btn-3d-primary" onClick={() => navigate('/role')}>
-                  <span>Start Learning Free</span>
+                <button className="btn-3d-primary" onClick={() => navigate('/free-activities')}>
+                  <span>Try Learning Free</span>
                   <span className="material-symbols-outlined" style={{ fontSize: '24px' }}>rocket_launch</span>
                 </button>
-                <a href="#interactive-teaser" className="btn-3d-secondary">
-                  <span className="material-symbols-outlined" style={{ color: '#0058be', fontSize: '24px' }}>
-                    sports_esports
-                  </span>
-                  <span>Try Mini Game</span>
-                </a>
               </div>
 
               {/* Trust Strip */}

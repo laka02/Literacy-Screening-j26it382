@@ -55,11 +55,11 @@ async def get_available_skills(
     grade = "4"
     child_name = "Young Explorer"
     scores = {
-        "writing": 88,
-        "reading": 84,
-        "speaking": 76,
-        "listening": 92,
-        "vocabulary": 92,
+        "writing": 38,
+        "reading": 42,
+        "speaking": 35,
+        "listening": 40,
+        "vocabulary": 36,
     }
 
     if target_email:
@@ -67,20 +67,26 @@ async def get_available_skills(
         if parent:
             grade = str(parent.get("grade", "4"))
             child_name = f"{parent.get('parent_name', 'Student')}'s Child"
-            # If parents have stored skill scores or completed exercises, calculate
-            completed = parent.get("completed_exercises", [])
-            for c in completed:
-                cat = c.get("skill_category", "").lower()
-                sc = c.get("score")
-                if "writing" in cat and sc:
-                    scores["writing"] = sc
-                elif "speak" in cat and sc:
-                    scores["speaking"] = sc
-                elif "read" in cat and sc:
-                    scores["reading"] = sc
-                elif ("list" in cat or "vocab" in cat) and sc:
-                    scores["listening"] = sc
-                    scores["vocabulary"] = sc
+            # Prioritize screening skill_scores stored on the parent account
+            stored_scores = parent.get("skill_scores")
+            if stored_scores and isinstance(stored_scores, dict):
+                for k, v in stored_scores.items():
+                    if k in scores and v is not None:
+                        scores[k] = int(v)
+            else:
+                # If no scores exist yet, initialize with low scores (< 50) and persist
+                low_scores = {
+                    "writing": 38,
+                    "reading": 42,
+                    "speaking": 35,
+                    "listening": 40,
+                    "vocabulary": 36,
+                }
+                await db["parents"].update_one(
+                    {"_id": parent["_id"]},
+                    {"$set": {"skill_scores": low_scores}}
+                )
+                scores.update(low_scores)
 
     skills_data = [
         {
@@ -106,18 +112,6 @@ async def get_available_skills(
             "performance_band": classify_performance(scores["reading"]),
             "tagline": "Read playful Sri Lankan adventure tales with minimal hesitation pauses!",
             "rules_applied": ["R03", "R07", "R16", "R33"],
-        },
-        {
-            "id": "speaking",
-            "name": "Speaking",
-            "animal_guide": "Oliver the Owl",
-            "guide_avatar": "🦉",
-            "icon": "record_voice_over",
-            "color": "#ea580c",
-            "current_score": scores["speaking"],
-            "performance_band": classify_performance(scores["speaking"]),
-            "tagline": "Echo voice challenge, phoneme clarity & natural sentence pacing!",
-            "rules_applied": ["R02", "R05", "R10", "R23"],
         },
         {
             "id": "listening",
@@ -161,9 +155,9 @@ async def generate_plan(
     # Safely parse user score
     raw_score = data.score if data.score is not None else data.current_score
     try:
-        user_score = float(raw_score) if raw_score is not None else 65.0
+        user_score = float(raw_score) if raw_score is not None else None
     except (ValueError, TypeError):
-        user_score = 65.0
+        user_score = None
 
     # Safely parse previous score
     raw_prev = data.previous_score
@@ -175,15 +169,16 @@ async def generate_plan(
     # Safely parse grade
     grade = str(data.grade).strip() if data.grade is not None else "4"
 
-    # Check database for past completed exercises of this skill to infer previous_score
+    # Check database for student's score if not passed
     if target_email:
         parent = await db["parents"].find_one({"parent_email": target_email})
         if parent:
             grade = str(parent.get("grade", grade))
-            completed = parent.get("completed_exercises", [])
-            skill_exs = [e for e in completed if target_skill in e.get("skill_category", "").lower()]
-            if skill_exs:
-                prev_score = skill_exs[-1].get("score", 60)
+            if user_score is None and "skill_scores" in parent and isinstance(parent["skill_scores"], dict):
+                user_score = float(parent["skill_scores"].get(target_skill, 40.0))
+
+    if user_score is None:
+        user_score = 40.0
 
     # Use expert rules engine
     plan_output = generate_adaptive_plan(
