@@ -16,6 +16,7 @@ const ALPHABET_LIST = [
   'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'
 ]
 
+
 const DEFAULT_SKILLS: SkillItem[] = [
   {
     id: 'writing',
@@ -29,6 +30,7 @@ const DEFAULT_SKILLS: SkillItem[] = [
     tagline: 'Master letter alignment, smooth stroke physics & neat handwriting!',
     rules_applied: ['R01', 'R04', 'R08', 'R09'],
   },
+  
   {
     id: 'reading',
     name: 'Reading',
@@ -41,6 +43,7 @@ const DEFAULT_SKILLS: SkillItem[] = [
     tagline: 'Read playful Sri Lankan adventure tales with minimal hesitation pauses!',
     rules_applied: ['R03', 'R07', 'R16', 'R33'],
   },
+  
   {
     id: 'speaking',
     name: 'Speaking',
@@ -53,6 +56,7 @@ const DEFAULT_SKILLS: SkillItem[] = [
     tagline: 'Echo voice challenge, phoneme clarity & natural sentence pacing!',
     rules_applied: ['R02', 'R05', 'R10', 'R23'],
   },
+  
   {
     id: 'listening',
     name: 'Listening',
