@@ -281,6 +281,228 @@ const ALPHABET_DATA: Record<string, LetterMeta> = {
   },
 }
 
+interface StrokeArrow {
+  step: number
+  color: string
+  d: string
+  startX: number
+  startY: number
+}
+
+const LETTER_STROKE_ARROWS: Record<string, StrokeArrow[]> = {
+  A: [
+    { step: 1, color: '#2563eb', d: 'M 400 110 L 325 320', startX: 400, startY: 105 },
+    { step: 2, color: '#ea580c', d: 'M 400 110 L 475 320', startX: 408, startY: 112 },
+    { step: 3, color: '#16a34a', d: 'M 355 225 L 445 225', startX: 355, startY: 225 },
+  ],
+  B: [
+    { step: 1, color: '#2563eb', d: 'M 335 110 L 335 320', startX: 335, startY: 105 },
+    { step: 2, color: '#ea580c', d: 'M 335 110 C 440 110, 440 210, 335 210', startX: 345, startY: 112 },
+    { step: 3, color: '#16a34a', d: 'M 335 210 C 450 210, 450 320, 335 320', startX: 345, startY: 215 },
+  ],
+  C: [
+    { step: 1, color: '#2563eb', d: 'M 465 140 C 375 95, 320 150, 320 215 C 320 285, 380 335, 465 290', startX: 465, startY: 135 },
+  ],
+  D: [
+    { step: 1, color: '#2563eb', d: 'M 335 110 L 335 320', startX: 335, startY: 105 },
+    { step: 2, color: '#ea580c', d: 'M 335 110 C 475 110, 475 320, 335 320', startX: 345, startY: 112 },
+  ],
+  E: [
+    { step: 1, color: '#2563eb', d: 'M 335 110 L 335 320', startX: 335, startY: 105 },
+    { step: 2, color: '#ea580c', d: 'M 335 112 L 460 112', startX: 345, startY: 112 },
+    { step: 3, color: '#16a34a', d: 'M 335 210 L 435 210', startX: 345, startY: 210 },
+    { step: 4, color: '#9333ea', d: 'M 335 318 L 460 318', startX: 345, startY: 318 },
+  ],
+  F: [
+    { step: 1, color: '#2563eb', d: 'M 335 110 L 335 320', startX: 335, startY: 105 },
+    { step: 2, color: '#ea580c', d: 'M 335 112 L 460 112', startX: 345, startY: 112 },
+    { step: 3, color: '#16a34a', d: 'M 335 210 L 430 210', startX: 345, startY: 210 },
+  ],
+  G: [
+    { step: 1, color: '#2563eb', d: 'M 465 140 C 375 95, 320 150, 320 215 C 320 285, 380 335, 465 290 L 465 220', startX: 465, startY: 135 },
+    { step: 2, color: '#ea580c', d: 'M 465 220 L 415 220', startX: 465, startY: 215 },
+  ],
+  H: [
+    { step: 1, color: '#2563eb', d: 'M 335 110 L 335 320', startX: 335, startY: 105 },
+    { step: 2, color: '#ea580c', d: 'M 465 110 L 465 320', startX: 465, startY: 105 },
+    { step: 3, color: '#16a34a', d: 'M 335 210 L 465 210', startX: 345, startY: 210 },
+  ],
+  I: [
+    { step: 1, color: '#2563eb', d: 'M 400 115 L 400 315', startX: 400, startY: 110 },
+    { step: 2, color: '#ea580c', d: 'M 350 112 L 450 112', startX: 350, startY: 112 },
+    { step: 3, color: '#16a34a', d: 'M 350 318 L 450 318', startX: 350, startY: 318 },
+  ],
+  J: [
+    { step: 1, color: '#2563eb', d: 'M 425 110 L 425 270 C 425 315, 350 325, 345 275', startX: 425, startY: 105 },
+    { step: 2, color: '#ea580c', d: 'M 360 112 L 470 112', startX: 360, startY: 112 },
+  ],
+  K: [
+    { step: 1, color: '#2563eb', d: 'M 335 110 L 335 320', startX: 335, startY: 105 },
+    { step: 2, color: '#ea580c', d: 'M 465 110 L 340 215', startX: 465, startY: 105 },
+    { step: 3, color: '#16a34a', d: 'M 340 215 L 465 320', startX: 345, startY: 215 },
+  ],
+  L: [
+    { step: 1, color: '#2563eb', d: 'M 335 110 L 335 320', startX: 335, startY: 105 },
+    { step: 2, color: '#ea580c', d: 'M 335 318 L 460 318', startX: 345, startY: 318 },
+  ],
+  M: [
+    { step: 1, color: '#2563eb', d: 'M 325 110 L 325 320', startX: 325, startY: 105 },
+    { step: 2, color: '#ea580c', d: 'M 325 110 L 400 260', startX: 330, startY: 112 },
+    { step: 3, color: '#16a34a', d: 'M 400 260 L 475 110', startX: 400, startY: 260 },
+    { step: 4, color: '#9333ea', d: 'M 475 110 L 475 320', startX: 475, startY: 105 },
+  ],
+  N: [
+    { step: 1, color: '#2563eb', d: 'M 335 110 L 335 320', startX: 335, startY: 105 },
+    { step: 2, color: '#ea580c', d: 'M 335 110 L 465 320', startX: 340, startY: 110 },
+    { step: 3, color: '#16a34a', d: 'M 465 320 L 465 110', startX: 465, startY: 320 },
+  ],
+  O: [
+    { step: 1, color: '#2563eb', d: 'M 400 110 C 320 110, 320 320, 400 320 C 480 320, 480 110, 400 110', startX: 400, startY: 105 },
+  ],
+  P: [
+    { step: 1, color: '#2563eb', d: 'M 335 110 L 335 320', startX: 335, startY: 105 },
+    { step: 2, color: '#ea580c', d: 'M 335 110 C 445 110, 445 215, 335 215', startX: 345, startY: 112 },
+  ],
+  Q: [
+    { step: 1, color: '#2563eb', d: 'M 400 110 C 320 110, 320 320, 400 320 C 480 320, 480 110, 400 110', startX: 400, startY: 105 },
+    { step: 2, color: '#ea580c', d: 'M 425 270 L 475 330', startX: 425, startY: 270 },
+  ],
+  R: [
+    { step: 1, color: '#2563eb', d: 'M 335 110 L 335 320', startX: 335, startY: 105 },
+    { step: 2, color: '#ea580c', d: 'M 335 110 C 445 110, 445 215, 335 215', startX: 345, startY: 112 },
+    { step: 3, color: '#16a34a', d: 'M 395 215 L 465 320', startX: 395, startY: 215 },
+  ],
+  S: [
+    { step: 1, color: '#2563eb', d: 'M 455 140 C 375 95, 335 160, 400 210 C 465 260, 420 330, 340 290', startX: 455, startY: 135 },
+  ],
+  T: [
+    { step: 1, color: '#2563eb', d: 'M 400 112 L 400 320', startX: 400, startY: 110 },
+    { step: 2, color: '#ea580c', d: 'M 325 112 L 475 112', startX: 325, startY: 112 },
+  ],
+  U: [
+    { step: 1, color: '#2563eb', d: 'M 335 110 L 335 270 C 335 325, 465 325, 465 270 L 465 110', startX: 335, startY: 105 },
+  ],
+  V: [
+    { step: 1, color: '#2563eb', d: 'M 335 110 L 400 320', startX: 335, startY: 105 },
+    { step: 2, color: '#ea580c', d: 'M 400 320 L 465 110', startX: 400, startY: 320 },
+  ],
+  W: [
+    { step: 1, color: '#2563eb', d: 'M 320 110 L 355 320', startX: 320, startY: 105 },
+    { step: 2, color: '#ea580c', d: 'M 355 320 L 395 165', startX: 355, startY: 320 },
+    { step: 3, color: '#16a34a', d: 'M 395 165 L 435 320', startX: 395, startY: 165 },
+    { step: 4, color: '#9333ea', d: 'M 435 320 L 480 110', startX: 435, startY: 320 },
+  ],
+  X: [
+    { step: 1, color: '#2563eb', d: 'M 335 110 L 465 320', startX: 335, startY: 105 },
+    { step: 2, color: '#ea580c', d: 'M 465 110 L 335 320', startX: 465, startY: 105 },
+  ],
+  Y: [
+    { step: 1, color: '#2563eb', d: 'M 335 110 L 400 210', startX: 335, startY: 105 },
+    { step: 2, color: '#ea580c', d: 'M 465 110 L 400 210', startX: 465, startY: 105 },
+    { step: 3, color: '#16a34a', d: 'M 400 210 L 400 320', startX: 400, startY: 210 },
+  ],
+  Z: [
+    { step: 1, color: '#2563eb', d: 'M 335 115 L 465 115', startX: 335, startY: 115 },
+    { step: 2, color: '#ea580c', d: 'M 465 115 L 335 315', startX: 465, startY: 115 },
+    { step: 3, color: '#16a34a', d: 'M 335 315 L 465 315', startX: 335, startY: 315 },
+  ],
+}
+
+/**
+ * Pixel-level verification that checks if the student's canvas drawing
+ * accurately traced the expected letter instead of scribbling or drawing outside.
+ */
+function evaluateLetterTracing(
+  userCanvas: HTMLCanvasElement,
+  letter: string
+): { isAccurate: boolean; accuracy: number; coverage: number; precision: number; feedback: string } {
+  const width = userCanvas.width
+  const height = userCanvas.height
+
+  // Render ground-truth guide mask on offscreen canvas
+  const refCanvas = document.createElement('canvas')
+  refCanvas.width = width
+  refCanvas.height = height
+  const refCtx = refCanvas.getContext('2d')
+  if (!refCtx) {
+    return { isAccurate: true, accuracy: 100, coverage: 1, precision: 1, feedback: 'Canvas unavailable' }
+  }
+
+  refCtx.clearRect(0, 0, width, height)
+  refCtx.font = '800 240px Quicksand, Comic Sans MS, sans-serif'
+  refCtx.textAlign = 'center'
+  refCtx.textBaseline = 'middle'
+  // Generous 44px tolerance line width for primary school children
+  refCtx.lineWidth = 44
+  refCtx.lineCap = 'round'
+  refCtx.lineJoin = 'round'
+  refCtx.strokeStyle = '#000000'
+  refCtx.strokeText(letter, width / 2, height / 2)
+  refCtx.fillStyle = '#000000'
+  refCtx.fillText(letter, width / 2, height / 2)
+
+  const refData = refCtx.getImageData(0, 0, width, height).data
+  const userCtx = userCanvas.getContext('2d')
+  if (!userCtx) {
+    return { isAccurate: true, accuracy: 100, coverage: 1, precision: 1, feedback: 'User canvas unavailable' }
+  }
+  const userData = userCtx.getImageData(0, 0, width, height).data
+
+  let targetPixels = 0
+  let drawnPixels = 0
+  let matchingPixels = 0
+
+  // Downsample step for fast evaluation (< 3ms)
+  const step = 6
+  for (let y = 0; y < height; y += step) {
+    for (let x = 0; x < width; x += step) {
+      const idx = (y * width + x) * 4
+      const isTarget = refData[idx + 3] > 40
+      const isDrawn = userData[idx + 3] > 40
+
+      if (isTarget) targetPixels++
+      if (isDrawn) drawnPixels++
+      if (isTarget && isDrawn) matchingPixels++
+    }
+  }
+
+  if (drawnPixels < 18) {
+    return {
+      isAccurate: false,
+      accuracy: 0,
+      coverage: 0,
+      precision: 0,
+      feedback: `✏️ Trace letter '${letter}' on the canvas first!`,
+    }
+  }
+
+  const coverage = targetPixels > 0 ? matchingPixels / targetPixels : 0
+  const precision = drawnPixels > 0 ? matchingPixels / drawnPixels : 0
+
+  // Balanced accuracy: 60% weight on covering the letter, 40% on staying on the letter
+  const rawScore = Math.round((coverage * 0.6 + precision * 0.4) * 100)
+  const accuracy = Math.min(100, Math.max(5, rawScore))
+
+  // Evaluation criteria:
+  // Must cover at least 26% of letter shape, have at least 24% precision, and accuracy >= 34%
+  const isAccurate = coverage >= 0.26 && precision >= 0.24 && accuracy >= 34
+
+  let feedback = ''
+  if (!isAccurate) {
+    if (precision < 0.22 && coverage < 0.18) {
+      feedback = `❌ Incorrect tracing (${accuracy}% Accuracy)! The drawing was outside letter '${letter}'. Follow the numbered arrows and trace inside the guide lines! ✏️`
+    } else if (coverage < 0.26) {
+      feedback = `❌ Incomplete tracing (${accuracy}% Accuracy)! You only traced part of letter '${letter}'. Follow arrows 1, 2, 3 to complete the whole letter! ✏️`
+    } else {
+      feedback = `❌ Inaccurate tracing (${accuracy}% Accuracy)! Stay closer to the guide lines for letter '${letter}'. Clear & try again! ✏️`
+    }
+  } else {
+    feedback = `🌟 Great job! Traced with ${accuracy}% Accuracy! Letter '${letter}' mastered!`
+  }
+
+  return { isAccurate, accuracy, coverage, precision, feedback }
+}
+
 
 const DEFAULT_SKILLS: SkillItem[] = [
   {
@@ -361,6 +583,9 @@ export default function PersonalPlan() {
   const [activeWritingLetter, setActiveWritingLetter] = useState<string>('A')
   const [completedWritingLetters, setCompletedWritingLetters] = useState<string[]>([])
   const [writingFeedback, setWritingFeedback] = useState<string>('Great! Keep practicing!')
+  const [showLetterArrows, setShowLetterArrows] = useState<boolean>(true)
+  const [writingAccuracyStatus, setWritingAccuracyStatus] = useState<'idle' | 'correct' | 'incorrect'>('idle')
+  const [lastAccuracyScore, setLastAccuracyScore] = useState<number | null>(null)
 
   // Reset or initialize writing studio canvas when game stage opens
   useEffect(() => {
@@ -451,12 +676,16 @@ export default function PersonalPlan() {
     if (!ctx) return
     ctx.clearRect(0, 0, canvas.width, canvas.height)
     setStrokePointsCount(0)
+    setWritingAccuracyStatus('idle')
+    setLastAccuracyScore(null)
     setWritingFeedback('Canvas cleared! Try tracing again ✏️')
   }
 
   const handleSwitchLetter = (letter: string) => {
     setActiveWritingLetter(letter)
     setStrokePointsCount(0)
+    setWritingAccuracyStatus('idle')
+    setLastAccuracyScore(null)
     clearCanvas()
     const isDone = completedWritingLetters.includes(letter)
     const lettersList: string[] = activeGameStage?.task_data?.letters_set || ALPHABET_LIST
@@ -470,7 +699,7 @@ export default function PersonalPlan() {
       )
     } else {
       setWritingFeedback(
-        `Tracing Letter '${letter}' as in ${wordExample}! (${completedWritingLetters.length}/${totalRequired} completed)`
+        `Tracing Letter '${letter}' as in ${wordExample}! Follow the numbered arrows ① ② ③ ✏️`
       )
     }
 
@@ -507,16 +736,35 @@ export default function PersonalPlan() {
   }
 
   const handleCheckWriting = async () => {
-    if (strokePointsCount < 8) {
+    const canvas = canvasRef.current
+
+    if (strokePointsCount < 8 || !canvas) {
+      setWritingAccuracyStatus('incorrect')
+      setLastAccuracyScore(0)
       setWritingFeedback(`✏️ Trace letter '${activeWritingLetter}' on the canvas first!`)
       handleSpeakText(`Trace letter ${activeWritingLetter} first with your finger or mouse!`)
       return
     }
 
+    // ── Pixel-level accuracy check ──────────────────────────────────
+    const { isAccurate, accuracy, feedback } = evaluateLetterTracing(canvas, activeWritingLetter)
+    setLastAccuracyScore(accuracy)
+
+    if (!isAccurate) {
+      setWritingAccuracyStatus('incorrect')
+      setWritingFeedback(feedback)
+      handleSpeakText(
+        `That tracing is ${accuracy} percent accurate. Follow the numbered arrows and trace inside the guide letter!`
+      )
+      return  // Do NOT advance — user must retry
+    }
+
+    // ── Tracing accepted ────────────────────────────────────────────
+    setWritingAccuracyStatus('correct')
+
     const lettersList: string[] = activeGameStage?.task_data?.letters_set || ALPHABET_LIST
     const totalRequired = activeGameStage?.task_data?.total_letters || lettersList.length || 26
 
-    // Add current letter to completed list if not already there
     const isAlreadyDone = completedWritingLetters.includes(activeWritingLetter)
     const updatedCompleted = isAlreadyDone
       ? completedWritingLetters
@@ -527,9 +775,7 @@ export default function PersonalPlan() {
     const isAllComplete = updatedCompleted.length >= totalRequired
 
     if (!isAllComplete) {
-      // Find the next letter to trace
       const currentIndex = lettersList.indexOf(activeWritingLetter)
-      // Look for next letter in order, or next uncompleted letter
       const nextLetter =
         lettersList.find((l, idx) => idx > currentIndex && !updatedCompleted.includes(l)) ||
         lettersList.find((l) => !updatedCompleted.includes(l)) ||
@@ -539,18 +785,21 @@ export default function PersonalPlan() {
       const nextWord = nextMeta ? `${nextMeta.word} ${nextMeta.emoji}` : nextLetter
 
       setWritingFeedback(
-        `🌟 Superb! Letter '${activeWritingLetter}' completed! (${updatedCompleted.length}/${totalRequired}) Next: Letter '${nextLetter}' as in ${nextWord}! ✏️`
+        `🌟 Superb! Letter '${activeWritingLetter}' — ${accuracy}% Accuracy! (${updatedCompleted.length}/${totalRequired}) Next: '${nextLetter}' as in ${nextWord}! ✏️`
       )
       handleSpeakText(
-        `Great handwriting! You conquered letter ${activeWritingLetter}! Now let's trace letter ${nextLetter}!`
+        `Great handwriting! ${accuracy} percent accurate! You conquered letter ${activeWritingLetter}! Now let's trace letter ${nextLetter}!`
       )
 
-      clearCanvas()
-      setActiveWritingLetter(nextLetter)
+      setTimeout(() => {
+        setWritingAccuracyStatus('idle')
+        setLastAccuracyScore(null)
+        clearCanvas()
+        setActiveWritingLetter(nextLetter)
+      }, 900)
     } else {
-      // All 26 letters (or all required items) completed!
       setWritingFeedback(
-        `🏆 Incredible! You conquered all ${totalRequired} letters from A to Z! Stage ${activeGameStage?.stage_number} Completed! +${activeGameStage?.xp_reward || 50} Stars! 🌟`
+        `🏆 Incredible! All ${totalRequired} letters from A to Z conquered! Stage ${activeGameStage?.stage_number} Completed! +${activeGameStage?.xp_reward || 50} Stars! 🌟`
       )
       handleSpeakText(
         `Incredible work! You have conquered all 26 letters from A to Z! Stage completed!`
@@ -562,7 +811,7 @@ export default function PersonalPlan() {
             selectedSkill?.id || 'writing',
             activeGameStage.stage_number,
             activeGameStage.title,
-            100,
+            accuracy,
             activeGameStage.xp_reward,
             hintsUsedCount,
             attemptsCount,
@@ -1279,7 +1528,15 @@ export default function PersonalPlan() {
                         </div>
 
                         {/* Interactive Ruled Handwriting Canvas Box */}
-                        <div className="handwriting-canvas-card">
+                        <div
+                          className={`handwriting-canvas-card${
+                            writingAccuracyStatus === 'incorrect'
+                              ? ' canvas-feedback-incorrect'
+                              : writingAccuracyStatus === 'correct'
+                              ? ' canvas-feedback-correct'
+                              : ''
+                          }`}
+                        >
                           <div className="handwriting-lines-bg" />
                           <div className="dashed-midline-rule" />
                           <div
@@ -1288,6 +1545,73 @@ export default function PersonalPlan() {
                           >
                             {activeWritingLetter}
                           </div>
+
+                          {/* ── Stroke Direction Arrow Overlay ── */}
+                          {showLetterArrows && LETTER_STROKE_ARROWS[activeWritingLetter] && (
+                            <svg
+                              className="letter-stroke-arrow-overlay"
+                              viewBox="0 0 800 420"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <defs>
+                                {LETTER_STROKE_ARROWS[activeWritingLetter].map((arrow) => (
+                                  <marker
+                                    key={`marker-${arrow.step}`}
+                                    id={`arrowhead-${activeWritingLetter}-${arrow.step}`}
+                                    markerWidth="7"
+                                    markerHeight="7"
+                                    refX="5"
+                                    refY="3.5"
+                                    orient="auto"
+                                  >
+                                    <polygon
+                                      points="0 0, 7 3.5, 0 7"
+                                      fill={arrow.color}
+                                      opacity="0.85"
+                                    />
+                                  </marker>
+                                ))}
+                              </defs>
+
+                              {LETTER_STROKE_ARROWS[activeWritingLetter].map((arrow) => (
+                                <g key={`stroke-${arrow.step}`}>
+                                  {/* Dashed animated guide path */}
+                                  <path
+                                    d={arrow.d}
+                                    fill="none"
+                                    stroke={arrow.color}
+                                    strokeWidth="4"
+                                    strokeOpacity="0.55"
+                                    strokeDasharray="10 6"
+                                    strokeLinecap="round"
+                                    className="guide-dashed-arrow-path"
+                                    markerEnd={`url(#arrowhead-${activeWritingLetter}-${arrow.step})`}
+                                  />
+                                  {/* Numbered start dot */}
+                                  <circle
+                                    cx={arrow.startX}
+                                    cy={arrow.startY}
+                                    r="13"
+                                    fill={arrow.color}
+                                    opacity="0.82"
+                                  />
+                                  <text
+                                    x={arrow.startX}
+                                    y={arrow.startY + 5}
+                                    textAnchor="middle"
+                                    fill="#ffffff"
+                                    fontSize="13"
+                                    fontWeight="900"
+                                    fontFamily="Quicksand, sans-serif"
+                                    style={{ userSelect: 'none', pointerEvents: 'none' }}
+                                  >
+                                    {arrow.step}
+                                  </text>
+                                </g>
+                              ))}
+                            </svg>
+                          )}
+
                           <canvas
                             ref={canvasRef}
                             width={800}
@@ -1326,6 +1650,16 @@ export default function PersonalPlan() {
                           </div>
 
                           <div className="canvas-actions-row">
+                            {/* Toggle stroke direction arrows */}
+                            <button
+                              className={`btn-toggle-arrows${showLetterArrows ? ' active' : ''}`}
+                              onClick={() => setShowLetterArrows((v) => !v)}
+                              title={showLetterArrows ? 'Hide stroke guide arrows' : 'Show stroke guide arrows'}
+                            >
+                              <span className="material-symbols-outlined" style={{ fontSize: '15px' }}>gesture</span>
+                              <span>{showLetterArrows ? 'Hide Arrows' : 'Show Arrows'}</span>
+                            </button>
+
                             <button
                               className="btn-demo-fill"
                               onClick={handleDemoFillLetters}
@@ -1351,15 +1685,46 @@ export default function PersonalPlan() {
 
               {/* Bottom Action Area */}
               <div className="letter-quest-bottom">
-                <div className="letter-quest-encouragement-pill">
+                <div
+                  className={`letter-quest-encouragement-pill${
+                    writingAccuracyStatus === 'incorrect'
+                      ? ' status-incorrect'
+                      : writingAccuracyStatus === 'correct'
+                      ? ' status-correct'
+                      : ''
+                  }`}
+                >
                   <span
                     className="material-symbols-outlined"
-                    style={{ color: '#16a34a', fontVariationSettings: "'FILL' 1" }}
+                    style={{
+                      color:
+                        writingAccuracyStatus === 'incorrect'
+                          ? '#ef4444'
+                          : writingAccuracyStatus === 'correct'
+                          ? '#16a34a'
+                          : '#16a34a',
+                      fontVariationSettings: "'FILL' 1",
+                    }}
                   >
-                    mood
+                    {writingAccuracyStatus === 'incorrect'
+                      ? 'cancel'
+                      : writingAccuracyStatus === 'correct'
+                      ? 'check_circle'
+                      : 'mood'}
                   </span>
                   <span>{writingFeedback}</span>
-                  <span className="stars-add">+10 Stars</span>
+                  {lastAccuracyScore !== null && (
+                    <span
+                      className={`accuracy-pill-score ${
+                        writingAccuracyStatus === 'incorrect' ? 'badge-bad' : 'badge-good'
+                      }`}
+                    >
+                      {lastAccuracyScore}%
+                    </span>
+                  )}
+                  {writingAccuracyStatus !== 'incorrect' && (
+                    <span className="stars-add">+10 Stars</span>
+                  )}
                 </div>
 
                 <button className="chunky-btn-check" onClick={handleCheckWriting}>

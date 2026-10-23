@@ -2111,6 +2111,115 @@
   box-shadow: 0 2px 0px rgba(0, 54, 122, 1), 0 4px 10px rgba(0, 88, 190, 0.2);
 }
 
+/* ── Letter Stroke Arrow Overlay (Directly on the Letter) ── */
+.letter-stroke-arrow-overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 5;
+  transition: opacity 0.3s ease;
+}
+
+.guide-dashed-arrow-path {
+  animation: strokeDashAnim 2s linear infinite;
+}
+
+@keyframes strokeDashAnim {
+  to {
+    stroke-dashoffset: -28;
+  }
+}
+
+/* ── Canvas Accuracy Feedback States (Incorrect vs Correct) ── */
+.handwriting-canvas-card.canvas-feedback-incorrect {
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 0 5px rgba(239, 68, 68, 0.28), inset 0 0 20px rgba(239, 68, 68, 0.12) !important;
+  animation: canvasShake 0.45s ease-in-out;
+}
+
+@keyframes canvasShake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-6px); }
+  40%, 80% { transform: translateX(6px); }
+}
+
+.handwriting-canvas-card.canvas-feedback-correct {
+  border-color: #16a34a !important;
+  box-shadow: 0 0 0 5px rgba(22, 163, 74, 0.28), inset 0 0 20px rgba(22, 163, 74, 0.12) !important;
+}
+
+/* Bottom pill incorrect style */
+.letter-quest-encouragement-pill.status-incorrect {
+  background: rgba(254, 242, 242, 0.98) !important;
+  border-color: #fca5a5 !important;
+  color: #b91c1c !important;
+  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.18) !important;
+}
+
+.letter-quest-encouragement-pill.status-correct {
+  background: rgba(240, 253, 244, 0.98) !important;
+  border-color: #86efac !important;
+  color: #15803d !important;
+  box-shadow: 0 4px 14px rgba(22, 163, 74, 0.18) !important;
+}
+
+/* Accuracy Score Badge */
+.accuracy-pill-score {
+  font-family: 'Quicksand', sans-serif;
+  font-size: 13.5px;
+  font-weight: 900;
+  padding: 3px 12px;
+  border-radius: 50px;
+  margin-left: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.accuracy-pill-score.badge-good {
+  background: #dcfce7;
+  color: #15803d;
+  border: 1.5px solid #86efac;
+}
+
+.accuracy-pill-score.badge-bad {
+  background: #fee2e2;
+  color: #b91c1c;
+  border: 1.5px solid #fca5a5;
+}
+
+/* Toggle Arrow Button */
+.btn-toggle-arrows {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 50px;
+  font-family: 'Quicksand', sans-serif;
+  font-size: 12.5px;
+  font-weight: 800;
+  cursor: pointer;
+  background: #eff6ff;
+  border: 1.5px solid #bfdbfe;
+  color: #1d4ed8;
+  transition: all 0.2s ease;
+}
+
+.btn-toggle-arrows:hover {
+  background: #dbeafe;
+  border-color: #3b82f6;
+  transform: translateY(-1px);
+}
+
+.btn-toggle-arrows.active {
+  background: #2563eb;
+  border-color: #1d4ed8;
+  color: #ffffff;
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25);
+}
+
 @media (max-width: 860px) {
   .letter-quest-bento-grid {
     grid-template-columns: 1fr;

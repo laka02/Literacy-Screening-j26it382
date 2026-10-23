@@ -68,6 +68,78 @@ def classify_performance(score):
     return "high"
 
 
+import os
+from pathlib import Path
+
+# ─────────────────────────────────────────────────────────────────────────────
+# ML MODEL INTEGRATION (Trained Random Forest Classifier)
+# ─────────────────────────────────────────────────────────────────────────────
+_ML_MODEL = None
+_ML_MODEL_PATH = Path(__file__).resolve().parent.parent.parent / "ml_model" / "caire_random_forest_demo.joblib"
+
+
+def get_ml_model():
+    """Load the pre-trained Random Forest model (pipeline with preprocessor & classifier)."""
+    global _ML_MODEL
+    if _ML_MODEL is None and _ML_MODEL_PATH.exists():
+        try:
+            import joblib
+            _ML_MODEL = joblib.load(_ML_MODEL_PATH)
+            print(f"[ML INFERENCE] Successfully loaded trained Random Forest model from {_ML_MODEL_PATH}")
+        except Exception as err:
+            print(f"[ML INFERENCE ERROR] Could not load joblib model: {err}")
+            _ML_MODEL = False
+    return _ML_MODEL if _ML_MODEL is not False else None
+
+
+def predict_support_priority_ml(
+    skill_type: str = "writing",
+    current_score: float = 40.0,
+    previous_score: float = None,
+    scores_dict: dict = None,
+    attempts: int = 1,
+    hints_used: int = 0
+):
+    """
+    Run real-time inference using the trained Random Forest Classifier.
+    Predicts: 'high', 'medium', 'low' support priority based on student's performance features.
+    """
+    model = get_ml_model()
+    if model is None:
+        return get_support_priority(current_score)
+
+    try:
+        import pandas as pd
+        
+        # Extract individual screening skill scores
+        w_score = float(scores_dict.get("writing", current_score if skill_type == "writing" else 40)) if scores_dict else float(current_score)
+        s_score = float(scores_dict.get("speaking", current_score if skill_type == "speaking" else 40)) if scores_dict else float(current_score)
+        v_score = float(scores_dict.get("vocabulary", scores_dict.get("listening", 40))) if scores_dict else 40.0
+        
+        prev = float(previous_score) if previous_score is not None else float(current_score)
+        score_diff = float(current_score) - prev
+
+        # Prepare exact feature row matching training data schema
+        features_df = pd.DataFrame([{
+            "writing_score": w_score,
+            "speaking_score": s_score,
+            "vocabulary_score": v_score,
+            "target_skill": str(skill_type).lower(),
+            "target_skill_score": float(current_score),
+            "previous_target_skill_score": prev,
+            "attempts": int(attempts or 1),
+            "hints_used": int(hints_used or 0),
+            "score_change": score_diff
+        }])
+
+        prediction = model.predict(features_df)[0]
+        print(f"[ML INFERENCE] Random Forest predicted support_priority='{prediction}' for skill='{skill_type}' (Score: {current_score})")
+        return str(prediction)
+    except Exception as e:
+        print(f"[ML INFERENCE ERROR] Fallback to expert rules: {e}")
+        return get_support_priority(current_score)
+
+
 def get_support_priority(score):
     """Keep support priority separate from performance category."""
     band = classify_performance(score)
@@ -80,14 +152,34 @@ def get_support_priority(score):
     }[band]
 
 
-def evaluate_skill(score, previous_score=None):
-    """Return a basic, explainable prototype recommendation."""
+def evaluate_skill(
+    score,
+    previous_score=None,
+    skill_type="writing",
+    scores_dict=None,
+    attempts=1,
+    hints_used=0
+):
+    """Return an explainable recommendation combining ML model inference with expert rules."""
     band = classify_performance(score)
-    priority = get_support_priority(score)
+    
+    # Predict support priority using trained Random Forest model
+    ml_priority = predict_support_priority_ml(
+        skill_type=skill_type,
+        current_score=score,
+        previous_score=previous_score,
+        scores_dict=scores_dict,
+        attempts=attempts,
+        hints_used=hints_used
+    )
+    rule_priority = get_support_priority(score)
+    priority = ml_priority if ml_priority else rule_priority
 
     result = {
         "performance_band": band,
         "support_priority": priority,
+        "ml_model_applied": "RandomForestClassifier (caire_random_forest_demo.joblib)",
+        "ml_prediction": ml_priority,
         "reason": [],
         "rules_applied": [],
     }
@@ -144,14 +236,30 @@ def evaluate_skill(score, previous_score=None):
     return result
 
 
-def generate_adaptive_plan(skill_type: str, current_score: float, previous_score: float = None, grade: str = "4"):
+def generate_adaptive_plan(
+    skill_type: str,
+    current_score: float,
+    previous_score: float = None,
+    grade: str = "4",
+    scores_dict: dict = None,
+    attempts: int = 1,
+    hints_used: int = 0
+):
     """
-    Generate a 3-stage adaptive adventure roadmap for Grade 3-5 children based on expert rules.
+    Generate a 3-stage adaptive adventure roadmap for Grade 3-5 children based on expert rules
+    and machine learning predictions from the trained Random Forest model.
     - Stage 1: Easy / Foundational (warm-up at learner's comfortable entry point)
     - Stage 2: Guided Practice (core practice target)
     - Stage 3: Gentle Challenge (stretch goal to stimulate cognitive progression)
     """
-    evaluation = evaluate_skill(current_score, previous_score)
+    evaluation = evaluate_skill(
+        score=current_score,
+        previous_score=previous_score,
+        skill_type=skill_type,
+        scores_dict=scores_dict,
+        attempts=attempts,
+        hints_used=hints_used
+    )
     band = evaluation["performance_band"]
 
     # Skill-specific configurations with animal guides & Sri Lankan child themes

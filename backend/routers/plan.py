@@ -171,6 +171,7 @@ async def generate_plan(
 
     # Check database for student's score and completed stages if not passed
     completed_stages = []
+    user_skill_scores = None
     if target_email:
         parent = await db["parents"].find_one({"parent_email": target_email})
         user_doc = parent
@@ -180,8 +181,9 @@ async def generate_plan(
         if user_doc:
             if parent:
                 grade = str(parent.get("grade", grade))
-                if user_score is None and "skill_scores" in parent and isinstance(parent["skill_scores"], dict):
-                    user_score = float(parent["skill_scores"].get(target_skill, 40.0))
+                user_skill_scores = parent.get("skill_scores")
+                if user_score is None and user_skill_scores and isinstance(user_skill_scores, dict):
+                    user_score = float(user_skill_scores.get(target_skill, 40.0))
 
             for ex in user_doc.get("completed_exercises", []):
                 cat = str(ex.get("skill_category", "")).lower()
@@ -196,12 +198,13 @@ async def generate_plan(
     if user_score is None:
         user_score = 40.0
 
-    # Use expert rules engine
+    # Execute Hybrid Inference (Random Forest ML Model + Expert Rules Engine)
     plan_output = generate_adaptive_plan(
         skill_type=target_skill,
         current_score=user_score,
         previous_score=prev_score,
-        grade=grade
+        grade=grade,
+        scores_dict=user_skill_scores
     )
 
     plan_output["completed_stages"] = completed_stages
