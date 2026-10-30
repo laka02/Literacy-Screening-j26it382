@@ -113,7 +113,7 @@ export default function AssessmentResult() {
               <img src="/lion-mascot.png" alt="Leo Explorer" className="result-mascot-img" />
               <div className="trophy-banner">
                 <span className="trophy-emoji">🏆</span>
-                <span className="trophy-text">Level 4 Star Reader</span>
+                <span className="trophy-text">{metrics.fluencyLevel} Fluency Reader</span>
               </div>
             </div>
 
@@ -130,55 +130,45 @@ export default function AssessmentResult() {
             </div>
           </div>
 
-          {/* 3 Simple Kid-Friendly Score Cards */}
+          {/* 3 Simple Kid-Friendly Score Cards (Dynamic from ML Feature Extraction) */}
           <div className="result-3cards-row">
             <div className="result-score-chip speed">
               <span className="chip-icon">🚀</span>
               <div className="chip-meta">
                 <span className="chip-label">Reading Speed</span>
                 <strong className="chip-val">{metrics.wpm} Words / Min</strong>
-                <span className="chip-rating">⭐⭐⭐⭐⭐ Steady pace</span>
+                <span className="chip-rating">
+                  {metrics.wpm >= 80 ? '⭐⭐⭐⭐⭐ High Speed' : metrics.wpm >= 50 ? '⭐⭐⭐⭐☆ Moderate Pace' : '⭐⭐⭐☆☆ Steady Pace'}
+                </span>
               </div>
             </div>
 
             <div className="result-score-chip accuracy">
               <span className="chip-icon">🎯</span>
               <div className="chip-meta">
-                <span className="chip-label">Clear Words</span>
+                <span className="chip-label">Word Accuracy</span>
                 <strong className="chip-val">{metrics.accuracyPercent}% Clear</strong>
-                <span className="chip-rating">⭐⭐⭐⭐⭐ Crisp speech</span>
+                <span className="chip-rating">
+                  {metrics.accuracyPercent >= 90 ? '⭐⭐⭐⭐⭐ High Accuracy' : metrics.accuracyPercent >= 75 ? '⭐⭐⭐⭐☆ Good Accuracy' : '⭐⭐⭐☆☆ Needs Practice'}
+                </span>
               </div>
             </div>
 
             <div className="result-score-chip flow">
               <span className="chip-icon">🌊</span>
               <div className="chip-meta">
-                <span className="chip-label">Smooth Rhythm</span>
-                <strong className="chip-val">{metrics.smoothnessPercent}% Flow</strong>
-                <span className="chip-rating">⭐⭐⭐⭐☆ Natural pauses</span>
+                <span className="chip-label">Pause Control</span>
+                <strong className="chip-val">{metrics.smoothnessPercent}% Score</strong>
+                <span className="chip-rating">
+                  {metrics.smoothnessPercent >= 80 ? '⭐⭐⭐⭐⭐ Natural Pauses' : metrics.smoothnessPercent >= 60 ? '⭐⭐⭐⭐☆ Occasional Pauses' : '⭐⭐⭐☆☆ Frequent Pauses'}
+                </span>
               </div>
-            </div>
-          </div>
-
-          {/* Rewards Row */}
-          <div className="result-rewards-strip">
-            <div className="reward-chip">
-              <span className="rw-icon">⭐</span>
-              <span><strong>+50 Stars</strong> Added!</span>
-            </div>
-            <div className="reward-chip">
-              <span className="rw-icon">🏅</span>
-              <span><strong>Jungle Scout</strong> Badge</span>
-            </div>
-            <div className="reward-chip">
-              <span className="rw-icon">🔥</span>
-              <span><strong>4-Day</strong> Streak</span>
             </div>
           </div>
 
           {/* Interactive Word Feedback */}
           <div className="result-words-section">
-            <WordAlignmentView words={wordAlignment} />
+            <WordAlignmentView words={wordAlignment} accuracyPercent={metrics.accuracyPercent} />
           </div>
 
           {/* Bottom Action Bar */}

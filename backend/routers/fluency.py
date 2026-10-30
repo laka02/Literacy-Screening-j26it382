@@ -33,6 +33,7 @@ import re
 import sys
 import tempfile
 import logging
+import threading
 from pathlib import Path
 from typing import Optional
 from datetime import datetime, timezone
@@ -67,19 +68,24 @@ PASSAGES_DIR = ML_DIR / "passages"
 
 # ── Whisper model (loaded once at first request) ───────────────────────────────
 _whisper_model = None
+_whisper_lock = threading.Lock()
+_model_cache = None
+_model_lock = threading.Lock()
 
 def _get_whisper():
     """Load Whisper 'small' model once and cache it."""
     global _whisper_model
     if _whisper_model is None:
-        try:
-            import whisper as _whisper
-            logger.info("[Whisper] Loading 'small' model …")
-            _whisper_model = _whisper.load_model("small")
-            logger.info("[Whisper] Model loaded successfully.")
-        except Exception as exc:
-            logger.error(f"[Whisper] Failed to load model: {exc}")
-            raise RuntimeError(f"Whisper model could not be loaded: {exc}") from exc
+        with _whisper_lock:
+            if _whisper_model is None:
+                try:
+                    import whisper as _whisper
+                    logger.info("[Whisper] Loading 'small' model …")
+                    _whisper_model = _whisper.load_model("small")
+                    logger.info("[Whisper] Model loaded successfully.")
+                except Exception as exc:
+                    logger.error(f"[Whisper] Failed to load model: {exc}")
+                    raise RuntimeError(f"Whisper model could not be loaded: {exc}") from exc
     return _whisper_model
 
 
@@ -91,7 +97,7 @@ def _transcribe_audio(audio_bytes: bytes) -> list[dict]:
     Returns list of {"word": str, "start": float, "end": float} dicts.
     Raises ValueError for silent / empty / hallucinated results.
     """
-    import subprocess, shutil
+    import subprocess, shutil, wave
 
     suffix = ".wav"
     with tempfile.NamedTemporaryFile(suffix=suffix, delete=False) as tmp:
@@ -101,8 +107,16 @@ def _transcribe_audio(audio_bytes: bytes) -> list[dict]:
     wav_path = src_path
     converted = False
     try:
-        # Try to normalise to 16 kHz mono WAV (best for Whisper)
-        if shutil.which("ffmpeg"):
+        # Avoid unnecessary FFmpeg conversion when audio is already verified 16 kHz 16-bit mono PCM WAV
+        already_16k_mono = False
+        try:
+            with wave.open(src_path, "rb") as wf:
+                if wf.getnchannels() == 1 and wf.getframerate() == 16000 and wf.getsampwidth() == 2:
+                    already_16k_mono = True
+        except Exception:
+            already_16k_mono = False
+
+        if not already_16k_mono and shutil.which("ffmpeg"):
             norm_path = src_path.replace(".wav", "_norm.wav")
             result = subprocess.run(
                 [
@@ -165,60 +179,91 @@ def _transcribe_audio(audio_bytes: bytes) -> list[dict]:
                 pass
 
 
-# ── ML model (loaded once) ─────────────────────────────────────────────────────
-_model_cache = None
+def preload_models():
+    """
+    Preload Whisper 'small' and LogisticRegression model.pkl at FastAPI startup.
+    Ensures zero cold-start delay for student assessments.
+    """
+    logger.info("[Startup] Preloading Whisper 'small' model...")
+    _get_whisper()
+    logger.info("[Startup] Preloading ML model.pkl...")
+    _load_model()
+    logger.info("[Startup] All models successfully preloaded.")
+
 
 def _load_model():
     """Load ml/models/model.pkl (joblib dict) once and cache it."""
     global _model_cache
     if _model_cache is not None:
         return _model_cache
-    model_path = MODELS_DIR / "model.pkl"
-    if not model_path.exists():
-        logger.warning(f"[Model] model.pkl not found at {model_path}. Using RFCS heuristic.")
-        return None
-    try:
-        import joblib
-        _model_cache = joblib.load(model_path)
-        logger.info(f"[Model] Loaded: {_model_cache.get('name', 'unknown')}")
-        return _model_cache
-    except Exception as exc:
-        logger.warning(f"[Model] Failed to load model.pkl: {exc}")
-        return None
+    with _model_lock:
+        if _model_cache is not None:
+            return _model_cache
+        model_path = MODELS_DIR / "model.pkl"
+        if not model_path.exists():
+            logger.error(f"[Model] model.pkl not found at {model_path}.")
+            raise FileNotFoundError(f"Trained model not found at {model_path}")
+        try:
+            import joblib
+            _model_cache = joblib.load(model_path)
+            logger.info(f"[Model] Loaded: {_model_cache.get('name', 'unknown')} | Classes: {_model_cache.get('classes')}")
+            return _model_cache
+        except Exception as exc:
+            logger.error(f"[Model] Failed to load model.pkl: {exc}")
+            raise RuntimeError(f"Failed to load model.pkl: {exc}") from exc
 
 
-def _predict_level(feat: dict, rfcs: float) -> tuple[str, dict]:
+def _predict_level(feat: dict) -> tuple[str, dict]:
     """
-    Run ML prediction.  Returns (level_str, class_probabilities_dict).
-    Falls back to RFCS threshold only if model.pkl is unavailable.
+    Run ML prediction using trained LogisticRegression model.pkl.
+    Returns (level_str, class_probabilities_dict).
+    Raises an explicit RuntimeError if model is missing or prediction fails.
+    (No silent heuristic fallback).
     """
     mdl = _load_model()
-    if mdl is not None:
-        try:
-            import pandas as pd
-            row = pd.DataFrame([feat])[FEATURES]
-            classes = mdl.get("classes", ORDER)
+    if mdl is None or "model" not in mdl:
+        raise RuntimeError("Trained ML model (model.pkl) is unavailable.")
+
+    try:
+        import pandas as pd
+        row = pd.DataFrame([feat])[FEATURES]
+        model = mdl["model"]
+        labels = mdl.get("classes", ORDER)
+        model_classes = getattr(model, "classes_", range(len(labels)))
+
+        # 1. Genuine ML model prediction
+        raw_pred = model.predict(row)[0]
+        if raw_pred in labels:
+            level = str(raw_pred)
+        else:
             try:
-                idx = int(raw_pred)
-                level = classes[idx] if 0 <= idx < len(classes) else str(raw_pred)
-            except (ValueError, TypeError):
-                level = str(raw_pred)
-            # Predict probabilities if available
-            proba_dict: dict = {}
-            if hasattr(mdl["model"], "predict_proba"):
-                proba = mdl["model"].predict_proba(row)[0]
-                proba_dict = {cls: round(float(p), 3) for cls, p in zip(classes, proba)}
-            return level, proba_dict
-        except Exception as exc:
-            logger.warning(f"[Model] Prediction failed: {exc} — using RFCS heuristic.")
-    # Heuristic fallback
-    if rfcs >= 82:
-        level = "High"
-    elif rfcs < 60:
-        level = "Low"
-    else:
-        level = "Medium"
-    return level, {}
+                class_index = list(model_classes).index(raw_pred)
+            except ValueError as exc:
+                raise RuntimeError(
+                    f"Model returned unknown class label {raw_pred!r}; "
+                    f"known classes are {list(model_classes)!r}."
+                ) from exc
+            if class_index >= len(labels):
+                raise RuntimeError(
+                    f"Model class index {class_index} has no configured label."
+                )
+            level = str(labels[class_index])
+
+        # 2. Genuine class probabilities from predict_proba
+        proba_dict: dict = {}
+        if hasattr(model, "predict_proba"):
+            proba = model.predict_proba(row)[0]
+            proba_dict = {
+                str(labels[list(model_classes).index(cls)]): round(float(p), 4)
+                for cls, p in zip(model_classes, proba)
+                if cls in model_classes and list(model_classes).index(cls) < len(labels)
+            }
+
+        logger.info(f"[Model] Genuine ML Prediction: {level} | Probabilities: {proba_dict}")
+        return level, proba_dict
+    except Exception as exc:
+        logger.error(f"[Model] Prediction execution failed: {exc}")
+        raise RuntimeError(f"ML Model prediction failed: {exc}") from exc
 
 
 # ── Feedback generator ─────────────────────────────────────────────────────────
@@ -355,8 +400,12 @@ async def assess_speech(
         clean_feat["avg_pause"],
     )
 
-    # ── 6. ML prediction ──────────────────────────────────────────────────────
-    level, class_proba = _predict_level(clean_feat, rfcs)
+    # ── 6. ML prediction (genuine model.pkl inference) ───────────────────────
+    try:
+        level, class_proba = _predict_level(clean_feat)
+    except Exception as exc:
+        logger.exception("[Model] Prediction error")
+        raise HTTPException(status_code=500, detail=f"ML model prediction error: {exc}")
 
     # ── 7. Word alignment (from same Levenshtein traceback as features) ───────
     word_alignment = build_word_alignment_from_traceback(
@@ -368,10 +417,12 @@ async def assess_speech(
 
     # ── 9. Display metrics ─────────────────────────────────────────────────────
     accuracy_pct   = round(clean_feat["accuracy"] * 100, 1)
-    wpm_pct        = min(100, round((clean_feat["wpm"] / TARGET_WCPM) * 100))
+    wpm_pct        = min(100, round((clean_feat["wcpm"] / TARGET_WCPM) * 100))
     wer            = round((sub + dele) / N, 3) if N > 0 else 0.0
-    smoothness_pct = min(100, max(30, 100 - clean_feat["pause_count"] * 5
-                                     - round(clean_feat["avg_pause"] * 10)))
+    # Pausing / Rhythm Score: mathematically equals the 15% pausing term in the RFCS formula:
+    # 100 * (1.0 - min(avg_pause / 2.0, 1.0))
+    pausing_pct    = round(max(0.0, (1.0 - min(clean_feat["avg_pause"] / 2.0, 1.0)) * 100), 1)
+    smoothness_pct = pausing_pct
     confidence_badge = (
         "High Spirit ⚡"     if rfcs >= 82 else
         "Growing Strong 🌱"  if rfcs >= 60 else

@@ -115,7 +115,7 @@ export const FluencyScoreGauge: React.FC<FluencyScoreGaugeProps> = ({
 
           <div className="breakdown-bar-item">
             <div className="bar-label-row">
-              <span className="bar-name">🚀 Reading Speed (WPM)</span>
+              <span className="bar-name">🚀 Reading Speed (WCPM)</span>
               <strong className="bar-percentage">{wpmPercent}%</strong>
             </div>
             <div className="bar-track">
@@ -128,7 +128,7 @@ export const FluencyScoreGauge: React.FC<FluencyScoreGaugeProps> = ({
 
           <div className="breakdown-bar-item">
             <div className="bar-label-row">
-              <span className="bar-name">🌊 Smoothness & Flow</span>
+              <span className="bar-name">🌊 Pause Control & Flow</span>
               <strong className="bar-percentage">{smoothnessPercent}%</strong>
             </div>
             <div className="bar-track">

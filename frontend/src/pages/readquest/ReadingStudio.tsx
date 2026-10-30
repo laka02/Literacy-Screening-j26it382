@@ -3,8 +3,10 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { ReadQuestNavbar } from '../../components/readquest/ReadQuestNavbar'
 import { AudioVisualizer } from '../../components/readquest/AudioVisualizer'
 import { MissionCompletedModal } from '../../components/readquest/MissionCompletedModal'
+import { ScoreCelebrationModal } from '../../components/readquest/ScoreCelebrationModal'
 import { READING_PASSAGES } from '../../data/passages'
 import { assessReadingFluency } from '../../services/fluencyService'
+import { FluencyProfileReport } from '../../types/fluency'
 import './ReadQuest.css'
 
 // Processing status messages shown while Whisper is running
@@ -35,6 +37,8 @@ export default function ReadingStudio() {
   const [assessError, setAssessError] = useState<string | null>(null)
   const [isNarrating, setIsNarrating] = useState(false)
   const [showCompletedModal, setShowCompletedModal] = useState(false)
+  const [readyReport, setReadyReport] = useState<FluencyProfileReport | null>(null)
+  const [showCelebrationModal, setShowCelebrationModal] = useState(false)
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
   const audioChunksRef = useRef<Blob[]>([])
@@ -200,7 +204,8 @@ export default function ReadingStudio() {
       const report = await assessReadingFluency(audioBlob, passage, effectiveDuration)
       sessionStorage.setItem('current_fluency_report', JSON.stringify(report))
       setShowCompletedModal(false)
-      navigate('/readquest/result')
+      setReadyReport(report)
+      setShowCelebrationModal(true)
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Assessment failed. Please try again.'
       setAssessError(msg)
@@ -209,6 +214,16 @@ export default function ReadingStudio() {
       setIsSubmitting(false)
       setSubmitStep(0)
     }
+  }
+
+  const handleNavigateToResult = () => {
+    setShowCelebrationModal(false)
+    navigate('/readquest/result')
+  }
+
+  const handleCelebrationTryAgain = () => {
+    setShowCelebrationModal(false)
+    handleTryAgain()
   }
 
   return (
@@ -401,6 +416,14 @@ export default function ReadingStudio() {
         onTryAgain={handleTryAgain}
         isSubmitting={isSubmitting}
         processingStep={isSubmitting ? PROCESSING_STEPS[submitStep] : undefined}
+      />
+
+      {/* Colorful Score Celebration Modal (Shown as soon as AI score is ready) */}
+      <ScoreCelebrationModal
+        isOpen={showCelebrationModal}
+        report={readyReport}
+        onViewFullReport={handleNavigateToResult}
+        onTryAgain={handleCelebrationTryAgain}
       />
     </div>
   )

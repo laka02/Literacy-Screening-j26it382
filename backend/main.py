@@ -15,6 +15,12 @@ from database import connect_db, close_db
 async def lifespan(app: FastAPI):
     """Handle startup and shutdown events."""
     await connect_db()
+    # Preload Whisper 'small' and LogisticRegression model.pkl at startup
+    try:
+        fluency.preload_models()
+    except Exception as exc:
+        import logging
+        logging.getLogger("main").error(f"[Startup] Model preloading failed: {exc}")
     yield
     await close_db()
 

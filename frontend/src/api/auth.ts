@@ -26,7 +26,7 @@ api.interceptors.response.use(
     } else if (err.response?.data?.message) {
       msg = err.response.data.message
     } else if (err.code === 'ECONNREFUSED' || err.message?.includes('Network Error')) {
-      msg = 'Cannot connect to backend server. Please verify backend is running on http://127.0.0.1:8000.'
+      msg = 'Cannot connect to backend server. Please verify backend is running on http://127.0.0.1:8001.'
     } else if (err.message) {
       msg = err.message
     }

@@ -46,12 +46,17 @@ export interface StructuredFeatureVector {
   pauseCount: number              // Total pause count
   avgPauseDurationSec: number     // Average pause duration (sec)
   totalReadingDurationSec: number // Total reading duration (sec)
+  wcpm?: number
+  subRatePercent?: number
+  totalPauseSec?: number
+  longPauses?: number
 }
 
 export interface FluencyMetrics {
   // Composite Score
   rfcs: number                    // Reading Fluency Composite Score (0 - 100%)
   fluencyLevel: FluencyLevel      // 'Low' | 'Medium' | 'High'
+  classProbabilities?: Record<string, number>
   confidenceBadge: string         // e.g., 'High Spirit ⚡' | 'On Track 🌟'
 
   // Speed
